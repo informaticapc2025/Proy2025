@@ -20,6 +20,7 @@
       <n-layout-content style="padding: 20px;">
         <router-view />
       </n-layout-content>
+      
     </n-layout>
   </n-layout>
 </template>

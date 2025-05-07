@@ -89,3 +89,8 @@ body {
 .n-layout-header {
   background-color: transparent !important;
 }
+
+.n-card > .n-card__content,
+.n-card > .n-card__footer {
+  padding: 0 !important;
+}

@@ -53,18 +53,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import '@fortawesome/fontawesome-free/css/all.css'
 import cake from '@/assets/pngs/cake.jpg'
 import cupe from '@/assets/pngs/trophy.jpg'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-
-function navigate(key) {
-  router.push(key)
-}
 </script>
 
 <style scoped>

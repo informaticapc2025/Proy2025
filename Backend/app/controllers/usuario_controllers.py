@@ -11,3 +11,4 @@ def obtener_cumpleaños_hoy():
         Usuario.rol == 'alumno'  # solo alumnos
     ).all()
     return usuarios
+

@@ -8,7 +8,7 @@ def obtener_cumpleaños_hoy():
     usuarios = Usuario.query.filter(
         extract('day', Usuario.fecha_cumpleaños) == hoy.day,
         extract('month', Usuario.fecha_cumpleaños) == hoy.month,
-        Usuario.rol == 'alumno'  # solo alumnos
+        Usuario.rol == 'alumno'
     ).all()
     return usuarios
 

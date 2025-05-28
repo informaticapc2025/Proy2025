@@ -5,6 +5,7 @@
       <p>Username Lastname</p>
     </div>
   </n-card>
+ 
 </template>
 <style scoped>
 .user-card {

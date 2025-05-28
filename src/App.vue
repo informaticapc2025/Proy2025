@@ -4,6 +4,7 @@
       <n-layout-sider bordered width="15%" content-style="padding: 10px 20px;">
         <UserCard style="margin-bottom: 20px" />
         <SidebarMenu />
+        <ButtonAction style="margin-top: 20px" label="Realizar queja" />
       </n-layout-sider>
 
       <n-layout has-sider class="base-layout">
@@ -34,6 +35,7 @@ import logo from '@/assets/OGBU-logo.png'
 import SidebarMenu from '@/components/layout/SidebarMenu.vue'
 import CelebrationCard from '@/components/layout/CelebrationCard.vue'
 import UserCard from './components/layout/UserCard.vue'
+import ButtonAction from './components/layout/ButtonAction.vue'
 
 const showModal = ref(false)
 </script>

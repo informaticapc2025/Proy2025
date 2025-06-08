@@ -1,22 +1,24 @@
 from flask import Blueprint, request, jsonify
-from app.controllers import anuncio_controller
+from app.controllers.anuncio_controller import crear_anuncio, obtener_anuncios
 
-anuncio_bp = Blueprint("anuncio", __name__)
+anuncio_bp = Blueprint('anuncio', __name__)
 
-@anuncio_bp.route("/anuncios", methods=["GET"])
+@anuncio_bp.route('/anuncios', methods=['GET'])
 def listar_anuncios():
-    anuncios = anuncio_controller.obtener_anuncios()
+    anuncios = obtener_anuncios()
     return jsonify([
         {
-            "id": a.id,
-            "descripcion": a.descripcion,
-            "imagen": a.imagen,
-            "fecha_creacion": a.fecha_creacion.isoformat()
+            'id': a.id_publicacion,
+            'descripcion': a.descripcion,
+            'imagen': a.imagen,
+            'fecha_publicacion': a.fecha_publicacion.strftime('%d/%m/%Y %H:%M')
         } for a in anuncios
     ])
 
-@anuncio_bp.route("/anuncios", methods=["POST"])
-def crear_anuncio():
+
+@anuncio_bp.route('/anuncios', methods=['POST'])
+def publicar_anuncio():
     data = request.get_json()
-    anuncio = anuncio_controller.crear_anuncio(data)
-    return jsonify({"id": anuncio.id}), 201
+    nuevo = crear_anuncio(data)
+    return jsonify({'mensaje': 'Anuncio publicado', 'id': nuevo.id_publicacion}), 201
+    

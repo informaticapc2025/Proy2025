@@ -14,15 +14,15 @@ a,
 }
 
 /* card-sidemenu */
-.n-menu  .n-menu-item-content-header {
+.n-menu .n-menu-item-content-header {
   color: white !important;
 }
 .n-menu .n-menu-item-content.n-menu-item-content--selected {
   border-radius: 20px;
-  background: #DCC1C1;
+  background: #dcc1c1;
   color: #163053 !important;
 }
-.n-menu .n-menu-item-content.n-menu-item-content--selected .n-menu-item-content-header{
+.n-menu .n-menu-item-content.n-menu-item-content--selected .n-menu-item-content-header {
   background-color: none !important;
   color: #163053 !important;
 }
@@ -40,4 +40,3 @@ a,
     background-color: hsla(160, 100%, 37%, 0.2);
   }
 }
-

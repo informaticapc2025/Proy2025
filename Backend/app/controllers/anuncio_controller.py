@@ -5,7 +5,7 @@ def crear_anuncio(data):
     # Contar cuántos anuncios hay
     total_anuncios = Publicacion.query.count()
 
-    # Si ya hay 15 o más, eliminar el más antiguo
+    # Si ya hay 15 o más, eliminar el más antiguoo
     if total_anuncios >= 15:
         anuncio_mas_antiguo = Publicacion.query.order_by(Publicacion.fecha_publicacion.asc()).first()
         if anuncio_mas_antiguo:

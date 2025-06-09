@@ -286,12 +286,12 @@ html, body {
   height: 100%;
   overflow-y: auto;
   margin: 0;
-  scrollbar-width: none;  /* Firefox */
-  -ms-overflow-style: none;  /* IE 10+ */
+  scrollbar-width: none;  
+  -ms-overflow-style: none;  
 }
 
 body::-webkit-scrollbar {
-  width: 0px;  /* Chrome, Safari */
+  width: 0px; 
   background: transparent;
 }
 </style>

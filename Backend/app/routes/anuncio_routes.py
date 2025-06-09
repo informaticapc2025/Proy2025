@@ -21,3 +21,4 @@ def publicar_anuncio():
     data = request.get_json()
     nuevo = crear_anuncio(data)
     return jsonify({'mensaje': 'Anuncio publicado', 'id': nuevo.id_publicacion}), 201
+    

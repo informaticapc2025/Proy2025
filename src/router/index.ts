@@ -6,6 +6,15 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      redirect: '/login'
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('../views/LoginView.vue')
+    },
+    {
+      path: '/home',
       name: 'home',
       component: HomeView,
     },
@@ -43,7 +52,7 @@ const router = createRouter({
       path: '/citas',
       name: 'citas',
       component: () => import('../views/SessionsView.vue')
-    }
+    },
   ],
 })
 

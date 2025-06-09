@@ -2,6 +2,10 @@
   <n-card class="card-sidemenu">
     <n-menu :options="menuOptions" :value="route.path" @update:value="navigate" />
   </n-card>
+
+
+
+  
 </template>
 
 <script setup>

@@ -1,6 +1,6 @@
 <template>
     <div class="about">
-      <h1>Pagina de actividades</h1>
+      <h1>Pagina de asistencias</h1>
     </div>
   </template>
   

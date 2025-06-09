@@ -37,6 +37,8 @@ const iniciarSesion = async () => {
       }
     })
 
+    localStorage.setItem('usuario', JSON.stringify(data)) 
+
     router.push('/anuncios')
   } catch (error) {
     alert('Credenciales inválidas')

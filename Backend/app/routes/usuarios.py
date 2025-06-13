@@ -38,11 +38,13 @@ def login():
     if not usuario or not check_password_hash(usuario.contraseña, contraseña):
         return jsonify({'mensaje': 'Credenciales inválidas'}), 401
 
+
     return jsonify({
-        'id': usuario.id_usuario,
-        'nombre': usuario.nombre,
-        'rol': usuario.rol
-    })
+        "id": usuario.id_usuario,
+        "nombre": usuario.nombre,
+        "rol": usuario.rol
+    }), 200
+
 
 
     

@@ -10,3 +10,5 @@ class Usuario(db.Model):
     contraseña = db.Column(db.String(255), nullable=False)
     rol = db.Column(db.String(20), nullable=False)
     fecha_cumpleaños = db.Column(db.Date)
+    codigo_alumno = db.Column(db.String(20), unique=True)
+

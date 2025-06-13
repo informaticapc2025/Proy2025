@@ -7,8 +7,11 @@ def crear_reconocimiento(data):
         id_alumno=data.get("id_alumno"),
         descripcion=data.get("descripcion"),
         fecha_reconocimiento=datetime.now(),
-        id_usuario=data.get("id_usuario")  # el admin que crea el reconocimiento
+        id_usuario=data.get("id_usuario") 
     )
     db.session.add(nuevo)
     db.session.commit()
     return nuevo
+
+def obtener_reconocimientos():
+    return Reconocimiento.query.order_by(Reconocimiento.fecha_reconocimiento.desc()).all()

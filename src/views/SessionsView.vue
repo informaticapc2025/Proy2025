@@ -18,7 +18,7 @@
     <!-- Modal para agendar cita -->
     <n-modal v-model:show="showModal" preset="dialog" class="modal-cita">
       <template #header>
-        <h2 style="color: #a1003c; text-align: center;">Agendar Cita</h2>
+        <h2 style="color: #a1003c; text-align: center">Agendar Cita</h2>
       </template>
 
       <div class="form-cita">
@@ -29,7 +29,11 @@
 
         <div>
           <label>Descripción:</label>
-          <n-input type="textarea" placeholder="Describe el motivo..." v-model:value="form.descripcion" />
+          <n-input
+            type="textarea"
+            placeholder="Describe el motivo..."
+            v-model:value="form.descripcion"
+          />
         </div>
 
         <div>
@@ -38,7 +42,7 @@
             v-model:value="form.area"
             :options="[
               { label: 'Psicología', value: 'psicologia' },
-              { label: 'Bienestar', value: 'bienestar' }
+              { label: 'Bienestar', value: 'bienestar' },
             ]"
           />
         </div>
@@ -51,8 +55,10 @@
           </div>
         </div>
 
-        <div style="text-align: center; margin-top: 16px;">
-          <n-button type="primary" style="background-color: #a1003c;" @click="submitCita">Enviar</n-button>
+        <div style="text-align: center; margin-top: 16px">
+          <n-button type="primary" style="background-color: #a1003c" @click="submitCita"
+            >Enviar</n-button
+          >
         </div>
       </div>
     </n-modal>
@@ -69,7 +75,7 @@ export default defineComponent({
     NModal,
     NInput,
     NSelect,
-    NDataTable
+    NDataTable,
   },
   setup() {
     const showModal = ref(false)
@@ -78,7 +84,7 @@ export default defineComponent({
     const form = ref({
       motivo: '',
       descripcion: '',
-      area: ''
+      area: '',
     })
 
     const submitCita = () => {
@@ -87,13 +93,13 @@ export default defineComponent({
     }
 
     const data = [
-      { key: 1, slot: 1, day: 'Lunes 10', hour: '09:00am - 10:00am', status: 'Disponible' },
-      { key: 2, slot: 2, day: 'Lunes 10', hour: '10:00am - 11:00am', status: 'No Disponible' },
-      { key: 3, slot: 3, day: 'Lunes 10', hour: '11:00am - 12:00pm', status: 'Disponible' },
+      { key: 1, slot: 1, day: 'Lunes 11', hour: '09:00am - 10:00am', status: 'Disponible' },
+      { key: 2, slot: 2, day: 'Lunes 12', hour: '10:00am - 11:00am', status: 'No Disponible' },
+      { key: 3, slot: 3, day: 'Lunes 13', hour: '11:00am - 12:00pm', status: 'Disponible' },
       { key: 4, slot: 4, day: 'Lunes 10', hour: '12:00pm - 01:00pm', status: 'Disponible' },
       { key: 5, slot: 5, day: 'Lunes 10', hour: '02:00pm - 03:00pm', status: 'No Disponible' },
       { key: 6, slot: 6, day: 'Lunes 10', hour: '03:00pm - 04:00pm', status: 'Disponible' },
-      { key: 7, slot: 7, day: 'Lunes 10', hour: '04:00pm - 05:00pm', status: 'No Disponible' }
+      { key: 7, slot: 7, day: 'Lunes 10', hour: '04:00pm - 05:00pm', status: 'No Disponible' },
     ]
 
     const columns = [
@@ -113,9 +119,9 @@ export default defineComponent({
                 onClick: () => {
                   selectedSlot.value = row
                   showModal.value = true
-                }
+                },
               },
-              { default: () => 'Disponible' }
+              { default: () => 'Disponible' },
             )
           } else {
             return h(
@@ -123,13 +129,13 @@ export default defineComponent({
               {
                 size: 'small',
                 class: 'btn-no-disponible',
-                disabled: true
+                disabled: true,
               },
-              { default: () => 'No Disponible' }
+              { default: () => 'No Disponible' },
             )
           }
-        }
-      }
+        },
+      },
     ]
 
     return {
@@ -140,9 +146,9 @@ export default defineComponent({
       form,
       submitCita,
       pagination: ref({ pageSize: 7 }),
-      dataTableInst: ref(null)
+      dataTableInst: ref(null),
     }
-  }
+  },
 })
 </script>
 

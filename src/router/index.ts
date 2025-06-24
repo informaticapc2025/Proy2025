@@ -17,33 +17,33 @@ const router = createRouter({
     {
       path: '/anuncios',
       name: 'anuncios',
-      component: () => import('../views/PostsView.vue')
+      component: () => import('../views/PostsView.vue'),
     },
     {
       path: '/actividades',
       name: 'actividades',
-      component: () => import('../views/ActivitiesView.vue')
+      component: () => import('../views/ActivitiesView.vue'),
     },
     {
       path: '/permisos',
       name: 'permisos',
-      component: () => import('../views/PermissionsView.vue')
+      component: () => import('../views/PermissionsView.vue'),
     },
     {
       path: '/quejas',
       name: 'quejas',
-      component: () => import('../views/ReportsView.vue')
+      component: () => import('../views/ReportsView.vue'),
     },
     {
       path: '/asistencia',
       name: 'asistencia',
-      component: () => import('../views/AssistsView.vue')
+      component: () => import('../views/AssistsView.vue'),
     },
     {
       path: '/citas',
       name: 'citas',
-      component: () => import('../views/SessionsView.vue')
-    }
+      component: () => import('../views/SessionsView.vue'),
+    },
   ],
 })
 

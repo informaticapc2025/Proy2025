@@ -49,8 +49,8 @@ const menuOptions = [
       h('i', { class: 'fa-regular fa-calendar-days', style: 'color: white; margin-right: 4px;' }),
   },
   {
-    label: 'Asistencias',
-    key: '/asistencias',
+    label: 'Asistencia',
+    key: '/asistencia',
     icon: () =>
       h('i', { class: 'fa-regular fa-calendar-check', style: 'color: white; margin-right: 4px;' }),
   },

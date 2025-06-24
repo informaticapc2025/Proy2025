@@ -1,8 +1,4 @@
 <template>
-  <div class="about">
-    <h1>Citas</h1>
-  </div>
-
   <div class="citas-container">
     <div class="citas-header">
       <div class="mes">Mayo</div>

@@ -41,35 +41,30 @@
                 hide-default-footer
                 :items-per-page="-1"
               >
-                <!-- Slot personalizado para la columna de código -->
                 <template v-slot:item.codigo="{ item }">
                   <span class="text-body-2 font-weight-medium text-grey-darken-1">
                     {{ item.codigo }}
                   </span>
                 </template>
 
-                <!-- Slot personalizado para la columna de título -->
                 <template v-slot:item.titulo="{ item }">
                   <span class="text-body-2 font-weight-medium">
                     {{ item.titulo }}
                   </span>
                 </template>
 
-                <!-- Slot personalizado para la columna de fecha -->
                 <template v-slot:item.fecha="{ item }">
                   <span class="text-body-2 text-grey-darken-1">
                     {{ item.fecha }}
                   </span>
                 </template>
 
-                <!-- Slot personalizado para la columna de resumen -->
                 <template v-slot:item.resumen="{ item }">
                   <span class="text-body-2 text-grey-darken-1">
                     {{ item.resumen }}
                   </span>
                 </template>
 
-                <!-- Slot personalizado para la columna de acciones -->
                 <template v-slot:item.acciones="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ props }">
@@ -106,7 +101,6 @@
               </v-data-table>
             </v-card>
 
-            <!-- Snackbar para mostrar mensajes -->
             <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
               {{ snackbar.message }}
               <template v-slot:actions>
@@ -253,7 +247,6 @@ function openModalNuevo() {
 }
 
 //Mis actividades
-// Funciones para las acciones
 const editItem = (item) => {
   snackbar.message = `Editando elemento: ${item.titulo}`
   snackbar.color = 'info'

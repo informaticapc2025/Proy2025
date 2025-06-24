@@ -131,7 +131,6 @@ export default {
     },
 
     openModalNuevo() {
-      // Objeto vacío para que el modal muestre todo en blanco
       this.selectedItem = {
         numero: '',
         asunto: '',

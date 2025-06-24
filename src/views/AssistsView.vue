@@ -9,10 +9,8 @@
       "
       elevation="4"
     >
-      <!-- Título -->
       <h2 class="text-h4 font-weight-bold mb-6" style="color: #b8860b">Reporte de Asistencia</h2>
 
-      <!-- Selectores de Año y Mes -->
       <v-row class="mb-6">
         <v-col cols="12" sm="6">
           <v-select
@@ -40,9 +38,7 @@
         </v-col>
       </v-row>
 
-      <!-- Tabla de Asistencia -->
       <v-card class="pa-0" style="border-radius: 12px; background-color: #f5f5f5" elevation="2">
-        <!-- Header de la tabla -->
         <v-row class="ma-0 pa-4" style="background-color: #e0e0e0; border-radius: 12px 12px 0 0">
           <v-col cols="6" class="pa-2">
             <h4 class="text-h6 font-weight-bold text-grey-darken-2">Fecha</h4>
@@ -52,7 +48,6 @@
           </v-col>
         </v-row>
 
-        <!-- Filas de datos -->
         <div v-for="(record, index) in attendanceRecords" :key="index">
           <v-row
             class="ma-0 pa-4 align-center"
@@ -78,8 +73,6 @@
           </v-row>
         </div>
       </v-card>
-
-      <!-- Resumen de asistencia -->
       <v-row class="mt-4">
         <v-col cols="12">
           <v-card class="pa-4" style="border-radius: 12px; background-color: #f8f9fa">
@@ -109,7 +102,6 @@
       </v-row>
     </v-card>
 
-    <!-- Dialog para mostrar reporte detallado -->
     <v-dialog v-model="reportDialog" max-width="500px">
       <v-card class="pa-4">
         <v-card-title class="text-h5 font-weight-bold"> Reporte Detallado </v-card-title>
@@ -127,7 +119,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Snackbar para notificaciones -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
       <template v-slot:actions>
@@ -144,7 +135,6 @@ const selectedMonth = ref('marzo')
 const reportDialog = ref(false)
 const selectedRecord = ref(null)
 
-// Opciones para los selectores
 const years = ['2022', '2023', '2024', '2025']
 const months = [
   { name: 'Enero', value: 'enero' },
@@ -161,7 +151,6 @@ const months = [
   { name: 'Diciembre', value: 'diciembre' },
 ]
 
-// Datos de asistencia
 const attendanceRecords = ref([
   { fecha: 'Lunes 3', status: 'report' },
   { fecha: 'Martes 4', status: 'absent' },
@@ -173,7 +162,6 @@ const attendanceRecords = ref([
   { fecha: 'Miércoles 12', status: 'absent' },
 ])
 
-// Estado del snackbar
 const snackbar = reactive({
   show: false,
   message: '',

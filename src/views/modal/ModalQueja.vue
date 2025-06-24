@@ -153,13 +153,8 @@ const submitComplaint = () => {
     archivo: selectedFile.value,
   })
 
-  // Aquí puedes agregar la lógica para enviar el formulario
-  // Por ejemplo, hacer una petición HTTP a tu API
-
-  // Cerrar el diálogo después del envío
   dialog.value = false
 
-  // Opcional: mostrar mensaje de confirmación
   alert('Queja enviada exitosamente')
 }
 </script>

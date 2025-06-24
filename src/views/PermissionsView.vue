@@ -1,10 +1,8 @@
 <template>
   <div class="pa-4">
     <v-row>
-      <!-- Columna izquierda - Formulario -->
       <v-col cols="12" md="6">
         <v-card class="pa-4" style="border-radius: 16px; background-color: #f8f9fa">
-          <!-- Tabs -->
           <v-tabs v-model="activeTab" class="mb-4">
             <v-tab value="solicitud" class="custom-tab">
               <span :class="{ 'active-tab-text': activeTab === 'solicitud' }">
@@ -17,7 +15,6 @@
           </v-tabs>
 
           <v-window v-model="activeTab">
-            <!-- Tab Solicitud de vivienda -->
             <v-window-item value="solicitud">
               <div class="mb-4">
                 <p class="text-body-2 mb-4 text-grey-darken-2">
@@ -25,7 +22,6 @@
                 </p>
 
                 <v-form @submit.prevent="submitRequest">
-                  <!-- Campo Desde -->
                   <div class="mb-3">
                     <label class="text-body-2 font-weight-medium mb-2 d-block"> Desde </label>
                     <v-select
@@ -38,7 +34,6 @@
                     ></v-select>
                   </div>
 
-                  <!-- Campo Hasta -->
                   <div class="mb-3">
                     <label class="text-body-2 font-weight-medium mb-2 d-block"> Hasta </label>
                     <v-select
@@ -51,7 +46,6 @@
                     ></v-select>
                   </div>
 
-                  <!-- Campo Motivo -->
                   <div class="mb-4">
                     <label class="text-body-2 font-weight-medium mb-2 d-block"> Motivo </label>
                     <v-textarea
@@ -63,7 +57,6 @@
                     ></v-textarea>
                   </div>
 
-                  <!-- Mensaje de advertencia -->
                   <v-alert
                     type="warning"
                     variant="text"
@@ -76,7 +69,6 @@
                     </span>
                   </v-alert>
 
-                  <!-- Botón Enviar -->
                   <div class="d-flex justify-start">
                     <v-btn
                       type="submit"
@@ -97,7 +89,6 @@
               </div>
             </v-window-item>
 
-            <!-- Tab Área Común -->
             <v-window-item value="area-comun">
               <div class="text-center pa-8">
                 <v-icon size="64" color="grey-lighten-1" class="mb-4"> mdi-home-group </v-icon>
@@ -111,7 +102,6 @@
         </v-card>
       </v-col>
 
-      <!-- Columna derecha - Reservas -->
       <v-col cols="12" md="6">
         <v-card class="pa-4" style="border-radius: 16px">
           <h3 class="text-h6 font-weight-bold mb-4 text-grey-darken-2">Reservas</h3>

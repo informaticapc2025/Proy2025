@@ -43,7 +43,7 @@ def obtener_reporte_admin(fecha_str):
     for r in registros:
         usuario = Usuario.query.get(r.id_usuario)
         resultado.append({
-            'codigo': usuario.codigo_alumno if usuario else None,
+            'codigo': usuario.id_usuario if usuario else None,
             'nombre': usuario.nombre if usuario else 'Desconocido',
             'hora': r.hora_marcado.strftime('%H:%M:%S')
         })

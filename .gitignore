@@ -7,24 +7,74 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
-*.local
+# Dependency directories
+node_modules/
+venv/
 
-/cypress/videos/
-/cypress/screenshots/
+# Build outputs
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-*.tsbuildinfo
+# Cypress outputs
+cypress/videos/
+cypress/screenshots/
+
+# Local environment files
+*.local
+
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+*.egg
+*.manifest
+*.spec
+
+# Virtualenv
+env/
+ENV/
+env.bak/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Test, coverage, and profiling
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+.ipynb_checkpoints/
+
+.mypy_cache/
+.dmypy.json
+dmypy.json

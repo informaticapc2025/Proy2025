@@ -18,8 +18,4 @@ if __name__ == "__main__":
         tables = inspector.get_table_names()
         print("📋 Tablas en la base de datos:", tables)
 
-        # Listar rutas:
-        for rule in app.url_map.iter_rules():
-            print("📌 Ruta disponible:", rule)
-
     app.run(debug=False, port=5000)

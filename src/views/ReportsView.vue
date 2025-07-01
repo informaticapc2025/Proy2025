@@ -2,17 +2,12 @@
   <div class="about">
     <h1>Mis reportes</h1>
   </div>
+
   <div style="background-color: rgba(184, 186, 163, 0.85); width: 95%; padding: 20px">
-    <!-- <v-select
-      v-model="selectedAddress"
-      :items="addressOptions"
-      label="Filtrar por dirección"
-      clearable
-      style="max-width: 300px; margin-bottom: 16px"
-    ></v-select> -->
     <div class="text-right">
       <v-btn variant="outlined" class="mb-6" @click="openModalNuevo">Nueva Queja</v-btn>
     </div>
+
     <v-data-table :items="filteredData" class="elevation-1" :items-per-page="5">
       <template #headers>
         <tr>
@@ -43,108 +38,68 @@
         </tr>
       </template>
     </v-data-table>
+
     <ModalQueja v-model="showModal" :item="selectedItem" />
   </div>
 </template>
-<script>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import QuejasService from '@/services/QuejasService'
 import ModalQueja from './modal/ModalQueja.vue'
 
-export default {
-  name: 'ReportsView',
-  components: { ModalQueja },
-  data() {
-    return {
-      selectedAddress: null,
-      showModal: false,
-      selectedItem: null,
-      data: [
-        {
-          numero: 'UNMSM-43255',
-          asunto: 'Me robaron mi espejo dentro de mi cuarto',
-          motivo: 'Robo',
-          fecha: '15/03/2025',
-          estado: 'Recibido',
-        },
-        {
-          numero: 'UNMSM-69873',
-          asunto: 'Rompieron Macetas del parque',
-          motivo: 'Destrucción de bienes',
-          fecha: '12/03/2025',
-          estado: 'Pendiente',
-        },
-        {
-          numero: 'UNMSM-96342',
-          asunto: 'Ruidos molestos en la residencia',
-          motivo: 'Ruido excesivo',
-          fecha: '12/03/2025',
-          estado: 'Pendiente',
-        },
-        {
-          numero: 'UNMSM-78521',
-          asunto: 'Vidrios rotos en el aula 302',
-          motivo: 'Destrucción de bienes',
-          fecha: '11/03/2025',
-          estado: 'En revisión',
-        },
-        {
-          numero: 'UNMSM-54789',
-          asunto: 'Basura acumulada en la biblioteca',
-          motivo: 'Falta de limpieza',
-          fecha: '10/03/2025',
-          estado: 'En proceso',
-        },
-        {
-          numero: 'UNMSM-23874',
-          asunto: 'Mal funcionamiento de luces en pasillo',
-          motivo: 'Infraestructura dañada',
-          fecha: '09/03/2025',
-          estado: 'Resuelto',
-        },
-        {
-          numero: 'UNMSM-87456',
-          asunto: 'Robo de bicicleta en el estacionamiento',
-          motivo: 'Robo',
-          fecha: '08/03/2025',
-          estado: 'Cerrado',
-        },
-        {
-          numero: 'UNMSM-65231',
-          asunto: 'Fuga de agua en los baños del pabellón',
-          motivo: 'Daño estructural',
-          fecha: '07/03/2025',
-          estado: 'En revisión',
-        },
-      ],
-    }
-  },
-  computed: {
-    filteredData() {
-      if (!this.selectedAddress) return this.data
-      return this.data.filter((item) => item.address.includes(this.selectedAddress))
-    },
-  },
-  methods: {
-    openModal(item) {
-      console.log('Opening modal for item:')
-      this.selectedItem = item
-      this.showModal = true
-    },
+const showModal = ref(false)
+const selectedItem = ref(null)
+const data = ref([])
 
-    openModalNuevo() {
-      this.selectedItem = {
-        numero: '',
-        asunto: '',
-        motivo: '',
-        fecha: '',
-        estado: '',
-        descripcion: '',
-      }
-      this.showModal = true
-    },
-  },
+const selectedAddress = ref(null)
+
+const filteredData = computed(() => {
+  if (!selectedAddress.value) return data.value
+  return data.value.filter((item) => item.address?.includes(selectedAddress.value))
+})
+
+// Cargar actividades al montar el componente
+onMounted(async () => {
+  await loadActividades()
+})
+
+async function loadActividades() {
+  try {
+    const actividades = await QuejasService.obtenerActividadesPorUsuario(1)
+    console.log(actividades)
+    data.value = actividades.map((a) => ({
+      numero: `UNMSM-${a.id}`,
+      asunto: a.titulo,
+      motivo: a.motivo ?? '',
+      fecha: new Date(a.fechaCreacion).toLocaleDateString(),
+      estado: a.estado,
+      descripcion: a.descripcion,
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+function openModal(item) {
+  selectedItem.value = item
+  showModal.value = true
+}
+
+function openModalNuevo() {
+  selectedItem.value = {
+    numero: '',
+    asunto: '',
+    motivo: '',
+    fecha: '',
+    estado: '',
+    descripcion: '',
+  }
+  showModal.value = true
 }
 </script>
-<style>
+
+<style scoped>
 .n-data-table,
 .n-data-table-tbody {
   background-color: transparent;

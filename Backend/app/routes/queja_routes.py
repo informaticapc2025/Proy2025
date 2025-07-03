@@ -1,13 +1,40 @@
 from flask import Blueprint, request, jsonify
 from app.controllers.queja_controller import crear_queja, obtener_quejas_por_usuario, obtener_todas_quejas, actualizar_estado_queja
+from werkzeug.utils import secure_filename
+from datetime import datetime
+import os
 
 queja_bp = Blueprint('queja', __name__)
 
 @queja_bp.route('/quejas', methods=['POST'])
 def registrar_queja():
-    data = request.get_json()
+    asunto = request.form.get("asunto")
+    motivo = request.form.get("motivo")
+    descripcion = request.form.get("descripcion")
+    id_usuario = request.form.get("id_usuario")
+
+    archivo = request.files.get("prueba")
+    nombre_archivo = None
+
+    if archivo:
+        filename = secure_filename(archivo.filename)
+        nombre_archivo = f"evidencia_{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
+        ruta_destino = os.path.join("uploads/quejas", nombre_archivo)
+        archivo.save(ruta_destino)
+
+    data = {
+        "asunto": asunto,
+        "motivo": motivo,
+        "descripcion": descripcion,
+        "prueba": nombre_archivo,
+        "id_usuario": id_usuario
+    }
+
     nueva = crear_queja(data)
-    return jsonify({'mensaje': 'Queja registrada', 'codigo': nueva.codigo_reporte}), 201
+    return jsonify({
+        "mensaje": "Queja registrada",
+        "codigo_reporte": nueva.codigo_reporte
+    }), 201
 
 @queja_bp.route('/quejas/usuario/<int:id_usuario>', methods=['GET'])
 def listar_quejas_usuario(id_usuario):

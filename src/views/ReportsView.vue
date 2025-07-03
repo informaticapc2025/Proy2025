@@ -72,7 +72,7 @@ async function loadActividades() {
       numero: `UNMSM-${a.id}`,
       asunto: a.titulo,
       motivo: a.motivo ?? '',
-      fecha: new Date(a.fechaCreacion).toLocaleDateString(),
+      fecha: new Date(a.fecha_actividad).toLocaleDateString(),
       estado: a.estado,
       descripcion: a.descripcion,
     }))

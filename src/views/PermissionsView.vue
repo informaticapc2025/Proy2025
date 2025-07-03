@@ -2,7 +2,10 @@
   <div class="pa-4">
     <v-row>
       <v-col cols="12" md="6">
-        <v-card class="pa-4" style="border-radius: 16px; background-color: #f8f9fa">
+        <v-card
+          class="pa-4"
+          style="border-radius: 16px; background-color: rgba(200, 210, 150, 0.3)"
+        >
           <v-tabs v-model="activeTab" class="mb-4">
             <v-tab value="solicitud" class="custom-tab">
               <span :class="{ 'active-tab-text': activeTab === 'solicitud' }">
@@ -103,7 +106,10 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <v-card class="pa-4" style="border-radius: 16px">
+        <v-card
+          class="pa-4"
+          style="border-radius: 16px; background-color: rgba(200, 210, 150, 0.3)"
+        >
           <h3 class="text-h6 font-weight-bold mb-4 text-grey-darken-2">Reservas</h3>
 
           <div v-if="reservas.length === 0" class="text-center pa-8">

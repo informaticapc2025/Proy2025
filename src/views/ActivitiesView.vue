@@ -61,7 +61,7 @@
 
                 <template v-slot:item.resumen="{ item }">
                   <span class="text-body-2 text-grey-darken-1">
-                    {{ item.resumen }}
+                    {{ item.descripcion }}
                   </span>
                 </template>
 
@@ -116,8 +116,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { NButton } from 'naive-ui'
+import QuejasService from '@/services/QuejasService'
 import ModalActividades from './modal/ModalActividades.vue'
 const tab = ref(1)
 const actividades = [
@@ -244,6 +245,29 @@ function openModalNuevo() {
     descripcion: '',
   }
   showModal.value = true
+}
+
+// Cargar actividades al montar el componente
+onMounted(async () => {
+  await loadActividades()
+})
+
+// CONSUMO DE SERVICIO - MIS SOLICITUDES
+async function loadActividades() {
+  try {
+    const actividades = await QuejasService.obtenerActividadesPorUsuario(1)
+    console.log(actividades)
+    items.value = actividades.map((a) => ({
+      id: a.id,
+      codigo: `UNMSM-${a.id}`,
+      titulo: a.titulo,
+      fecha: new Date(a.fecha_actividad).toLocaleDateString(),
+      resumen: a.descripcion,
+      descripcion: a.descripcion,
+    }))
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 //Mis actividades

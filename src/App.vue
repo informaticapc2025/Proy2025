@@ -4,7 +4,7 @@
       <n-layout-sider bordered width="15%" content-style="padding: 10px 20px;">
         <UserCard style="margin-bottom: 20px" />
         <SidebarMenu />
-        <ButtonAction style="margin-top: 20px" label="Realizar queja" />
+        <ButtonAction style="margin-top: 20px" label="Cerrar Sesión" />
       </n-layout-sider>
 
       <n-layout has-sider class="base-layout">

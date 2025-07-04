@@ -119,8 +119,11 @@
 </template>
 
 <script setup>
+import LoginService from '@/services/LoginService'
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const showPassword = ref(false)
 const loading = ref(false)
 
@@ -155,39 +158,35 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    // Simular llamada a API
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Llamar al servicio de autenticación
+    const result = await LoginService.login({
+      correo: form.username,
+      contraseña: form.password,
+    })
+    if (result.success) {
+      snackbar.message = `¡Bienvenido ${result.data.nombre}!`
+      snackbar.color = 'success'
+      snackbar.show = true
 
-    snackbar.message = `¡Bienvenido ${form.username}!`
-    snackbar.color = 'success'
-    snackbar.show = true
+      // Redirigir al dashboard después del login exitoso
+      setTimeout(() => {
+        router.push('/anuncios')
+      }, 1000)
 
-    // Aquí rediriges al dashboard o página principal
-    console.log('Login exitoso:', form)
+      console.log('Login exitoso:', result.data)
+    } else {
+      snackbar.message = result.message || 'Error al iniciar sesión'
+      snackbar.color = 'error'
+      snackbar.show = true
+    }
   } catch (error) {
-    snackbar.message = 'Error al iniciar sesión. Verifica tus credenciales.'
+    console.error('Error en login:', error)
+    snackbar.message = 'Error de conexión. Verifica tu conexión a internet.'
     snackbar.color = 'error'
     snackbar.show = true
   } finally {
     loading.value = false
   }
-}
-
-// Función para forgot password
-const handleForgotPassword = () => {
-  snackbar.message = 'Se ha enviado un enlace de recuperación a tu email'
-  snackbar.color = 'info'
-  snackbar.show = true
-}
-
-// Función para login social
-const handleSocialLogin = (provider) => {
-  snackbar.message = `Iniciando sesión con ${provider}...`
-  snackbar.color = 'info'
-  snackbar.show = true
-
-  // Aquí implementarías la lógica de OAuth
-  console.log(`Login con ${provider}`)
 }
 </script>
 

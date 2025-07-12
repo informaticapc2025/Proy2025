@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from werkzeug.security import check_password_hash
 from app.models.usuarios import Usuario
 from app.controllers.usuario_controllers import obtener_cumpleaños_hoy
 from app import db
@@ -33,14 +34,18 @@ def login():
     contraseña = data.get('contraseña')
 
     usuario = Usuario.query.filter_by(correo=correo).first()
-    if not usuario or usuario.contraseña != contraseña:
+
+    if not usuario or not check_password_hash(usuario.contraseña, contraseña):
         return jsonify({'mensaje': 'Credenciales inválidas'}), 401
 
+
     return jsonify({
-        'id': usuario.id_usuario,
-        'nombre': usuario.nombre,
-        'rol': usuario.rol
-    })
+        "id": usuario.id_usuario,
+        "nombre": usuario.nombre,
+        "rol": usuario.rol
+    }), 200
+
+
 
     
     

@@ -1,13 +1,19 @@
 from flask import Blueprint, request, jsonify
-from app.controllers.actividad_controller import crear_actividad, listar_por_usuario, listar_todas, cambiar_estado, listar_aprobadas
+from app.controllers.actividad_controller import crear_actividad_con_archivo, listar_por_usuario, listar_todas, cambiar_estado, listar_aprobadas
 
 actividad_bp = Blueprint('actividad', __name__)
 
+
 @actividad_bp.route('/actividades', methods=['POST'])
-def registrar():
-    data = request.get_json()
-    actividad = crear_actividad(data)
-    return jsonify({'mensaje': 'Solicitud registrada', 'id': actividad.id_actividad}), 201
+def registrar_actividad_alumno():
+    nueva = crear_actividad_con_archivo(aprobado_por_admin=False)
+    return jsonify({'mensaje': 'Solicitud registrada', 'id': nueva.id_actividad}), 201
+
+@actividad_bp.route('/actividades/admin', methods=['POST'])
+def registrar_actividad_admin():
+    nueva = crear_actividad_con_archivo(aprobado_por_admin=True)
+    return jsonify({'mensaje': 'Actividad creada y aprobada', 'id': nueva.id_actividad}), 201
+
 
 @actividad_bp.route('/actividades/usuario/<int:id_usuario>', methods=['GET'])
 def ver_por_usuario(id_usuario):

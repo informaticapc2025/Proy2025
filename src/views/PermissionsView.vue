@@ -119,8 +119,8 @@
 
           <div v-else>
             <v-card
-              v-for="reserva in reservas"
-              :key="reserva.id"
+              v-for="permiso in permisos"
+              :key="permiso.id"
               class="mb-3 pa-3"
               variant="outlined"
               style="border-radius: 12px"
@@ -128,16 +128,16 @@
               <div class="d-flex justify-space-between align-center">
                 <div>
                   <p class="text-body-1 font-weight-medium mb-1">
-                    {{ reserva.fechaInicio }} al {{ reserva.fechaFin }}
+                    {{ formatDate(permiso.fecha_salida) }} al {{ formatDate(permiso.fecha_regreso) }}
                   </p>
                   <div class="d-flex flex-column gap-1">
                     <v-chip
-                      :color="getStatusColor(reserva.estado)"
+                      :color="getStatusColor(permiso.estado)"
                       size="small"
                       variant="flat"
                       class="text-caption"
                     >
-                      {{ reserva.estado }}
+                      {{ permiso.estado }}
                     </v-chip>
                   </div>
                 </div>
@@ -146,7 +146,7 @@
                   variant="text"
                   size="small"
                   color="red"
-                  @click="deleteReserva(reserva.id)"
+                  @click="deleteReserva(permiso.id)"
                 >
                 </v-btn>
               </div>
@@ -167,10 +167,13 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import PermisosService from '@/services/PermisosService'
+import LoginService from '@/services/LoginService'
 
 const activeTab = ref('solicitud')
-
+const user = ref(LoginService.getCurrentUser())
+const permisos = ref([])
 // Formulario
 const form = reactive({
   desde: '',
@@ -239,7 +242,7 @@ const getStatusColor = (estado) => {
 }
 
 // Función para enviar solicitud
-const submitRequest = () => {
+async function submitRequest() {
   if (!form.desde || !form.hasta || !form.motivo) {
     snackbar.message = 'Por favor completa todos los campos'
     snackbar.color = 'error'
@@ -249,12 +252,13 @@ const submitRequest = () => {
 
   // Agregar nueva reserva
   const newReserva = {
-    id: Date.now(),
-    fechaInicio: form.desde,
-    fechaFin: form.hasta,
-    estado: 'En revisión',
+    id_usuario: user.value.id,
+    fecha_salida: dateFormatDB(form.desde),
+    fecha_regreso: dateFormatDB(form.hasta),
+    motivo: form.motivo,
   }
 
+  await PermisosService.crearPermiso(newReserva)
   reservas.value.unshift(newReserva)
 
   // Limpiar formulario
@@ -265,6 +269,29 @@ const submitRequest = () => {
   snackbar.message = 'Solicitud enviada exitosamente'
   snackbar.color = 'success'
   snackbar.show = true
+}
+
+async function loadPermisosPorUsuario() {
+  const items = await PermisosService.obtenerPermisosPorUsuario(user.value.id)
+  permisos.value = items.map((a) => ({
+      estado: a.estado,
+      fecha_regreso: a.fecha_regreso,
+      fecha_salida: a.fecha_salida,
+      id: a.id,
+      id_usuario: a.id_usuario,
+      motivo: a.descripcion || ''
+    }))
+}
+
+const dateFormatDB = (fecha) => {
+  const [dia, mes, anio] = fecha.split('/')
+  return `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`
+}
+
+const formatDate = (fecha) => {
+  if (!fecha) return ''
+  const partes = fecha.split('-')
+  return `${partes[2]}/${partes[1]}/${partes[0]}`
 }
 
 // Función para eliminar reserva
@@ -279,6 +306,10 @@ const deleteReserva = (id) => {
     }
   }
 }
+
+onMounted(async () => {
+  await loadPermisosPorUsuario()
+})
 </script>
 
 <style scoped>

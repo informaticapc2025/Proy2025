@@ -88,10 +88,12 @@
 
 <script setup>
 import { ref, reactive, watch, computed } from 'vue'
+import QuejasService from '@/services/QuejasService'
 
 const props = defineProps({
   modelValue: Boolean,
   item: Object,
+  user: Object
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -147,16 +149,20 @@ const handleFileSelect = (event) => {
   }
 }
 
-const submitComplaint = () => {
-  console.log('Formulario enviado:', {
-    ...form,
-    archivo: selectedFile.value,
-  })
+async function submitComplaint() {
+  const formData = new FormData();
+  formData.append('asunto', form.asunto);
+  formData.append('motivo', form.motivo);
+  formData.append('descripcion', form.descripcion);
+  formData.append('id_usuario', props.user.id);
+  formData.append('prueba', selectedFile.value);
 
-  dialog.value = false
+  await QuejasService.crearQueja(formData);
 
-  alert('Queja enviada exitosamente')
+  dialog.value = false;
+  alert('Queja enviada exitosamente');
 }
+
 </script>
 
 <style scoped>

@@ -28,37 +28,56 @@
   </n-card>
 
   <n-card class="card-celebration">
-    <div class="header-cc">
-      <i class="fa-solid fa-award"></i>
-      <p>Reconocimientos</p>
-    </div>
-    <n-list>
-      <n-list-item>
-        <div style="display: flex; align-items: center; gap: 2px">
-          <img :src="cupe" alt="cumpleaños" style="width: 20px; height: 20px" />
-          <div style="display: grid">
-            <span>Gerson Padilla Mendez</span>
-            <span style="font-size: 12px">Gerson Padilla Mendez</span>
-          </div>
+  <div class="header-cc">
+    <i class="fa-solid fa-award"></i>
+    <p>Reconocimientos</p>
+  </div>
+  <n-list>
+    <n-list-item v-for="(reconocimiento, index) in reconocimientoItems" :key="index">
+      <div style="display: flex; align-items: center; gap: 2px">
+        <img :src="cupe" alt="cumpleaños" style="width: 20px; height: 20px" />
+        <div style="display: grid">
+          <span>{{ reconocimiento.descripcion }}</span>
+          <span style="font-size: 12px">{{ formatDate(reconocimiento.fecha) }}</span>
         </div>
-      </n-list-item>
-      <n-list-item>
-        <div style="display: flex; align-items: center; gap: 2px">
-          <img :src="cupe" alt="cumpleaños" style="width: 20px; height: 20px" />
-          <span>Maria Castillo Quispe</span>
-        </div>
-      </n-list-item>
-    </n-list>
-  </n-card>
+      </div>
+    </n-list-item>
+  </n-list>
+</n-card>
 </template>
 
 <script setup>
 import cake from '@/assets/pngs/cake.jpg'
 import cupe from '@/assets/pngs/trophy.jpg'
 import { useRouter, useRoute } from 'vue-router'
+import ReconocimientosService from '@/services/ReconocimientosService'
+import { onMounted, ref } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
+const reconocimientoItems = ref([])
+
+async function loadReconocimientos() {
+  try {
+    const reconocimientos = await ReconocimientosService.obtenerReconocimientos()
+    reconocimientoItems.value = reconocimientos.map((a) => ({
+      descripcion: a.descripcion,
+      fecha: a.fecha,
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+function formatDate(fecha) {
+  if (!fecha) return ''
+  const partes = fecha.split('-')
+  return `${partes[2]}/${partes[1]}/${partes[0]}`
+}
+
+onMounted(async () => {
+  await loadReconocimientos()
+})
 </script>
 
 <style scoped>

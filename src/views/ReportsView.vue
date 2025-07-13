@@ -39,7 +39,7 @@
       </template>
     </v-data-table>
 
-    <ModalQueja v-model="showModal" :item="selectedItem" />
+    <ModalQueja v-model="showModal" :item="selectedItem" :user="user" />
   </div>
 </template>
 
@@ -47,10 +47,12 @@
 import { ref, computed, onMounted } from 'vue'
 import QuejasService from '@/services/QuejasService'
 import ModalQueja from './modal/ModalQueja.vue'
+import LoginService from '@/services/LoginService'
 
 const showModal = ref(false)
 const selectedItem = ref(null)
 const data = ref([])
+const user = ref(null)
 
 const selectedAddress = ref(null)
 
@@ -61,20 +63,23 @@ const filteredData = computed(() => {
 
 // Cargar actividades al montar el componente
 onMounted(async () => {
-  await loadActividades()
+  await loadUser()
+  await loadQuejas()
 })
 
-async function loadActividades() {
+async function loadUser() {
+  user.value = await LoginService.getCurrentUser()
+}
+
+async function loadQuejas() {
   try {
-    const actividades = await QuejasService.obtenerActividadesPorUsuario(1)
-    console.log(actividades)
-    data.value = actividades.map((a) => ({
-      numero: `UNMSM-${a.id}`,
-      asunto: a.titulo,
+    const quejas = await QuejasService.obtenerActividadesPorUsuario(user.value.id)
+    data.value = quejas.map((a) => ({
+      numero: a.codigo,
+      asunto: a.asunto,
       motivo: a.motivo ?? '',
-      fecha: new Date(a.fecha_actividad).toLocaleDateString(),
-      estado: a.estado,
-      descripcion: a.descripcion,
+      fecha: a.fecha,
+      estado: a.estado
     }))
   } catch (error) {
     console.error(error)

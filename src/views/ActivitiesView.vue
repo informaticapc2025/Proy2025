@@ -22,7 +22,7 @@
                 {{ actividad.descripcion || 'Sin descripción' }}
               </div>
             </div>
-            <div class="tipo">RECREACIÓN</div>
+            <div class="tipo">{{ actividad.tipo.toUpperCase() }}</div>
             <div class="accion">
               <n-button type="warning" ghost>Acceder al formulario</n-button>
             </div>
@@ -118,31 +118,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { NButton } from 'naive-ui'
-import QuejasService from '@/services/QuejasService'
+import ActividadesService from '@/services/ActividadesService'
 import ModalActividades from './modal/ModalActividades.vue'
+import LoginService from '@/services/LoginService'
 const tab = ref(1)
-const actividades = [
-  {
-    nombre: 'Viaje a Chilcas',
-    fecha: '03 abr - 07 abr',
-    descripcion: 'Viaje académico y recreativo',
-  },
-  {
-    nombre: 'Viaje a Chilcas',
-    fecha: '03 abr - 07 abr',
-    descripcion: 'Viaje académico y recreativo',
-  },
-  {
-    nombre: 'Viaje a Chilca',
-    fecha: '03 abr - 07 abr',
-    descripcion: 'Viaje académico y recreativo',
-  },
-  {
-    nombre: 'Viaje a Chilca',
-    fecha: '03 abr - 07 abr',
-    descripcion: '',
-  },
-]
+const user = ref(LoginService.getCurrentUser())
+const actividades = ref([])
 const headers = [
   {
     title: 'Código',
@@ -179,48 +160,7 @@ const headers = [
     width: '100px',
   },
 ]
-const items = ref([
-  {
-    id: 1,
-    codigo: '0001',
-    titulo: 'Visita a Chilca, descripcion importante',
-    fecha: '(03 abr - 07 abr)',
-    resumen:
-      'Visita a Chilca, descripcion importante Visita a Chilca, descripcion importante. Esta es una descripción más detallada del evento.',
-  },
-  {
-    id: 2,
-    codigo: '0002',
-    titulo: 'Reunión de seguimiento proyecto',
-    fecha: '(10 abr - 12 abr)',
-    resumen:
-      'Reunión para revisar el progreso del proyecto y definir próximos pasos. Se discutieron los entregables pendientes.',
-  },
-  {
-    id: 3,
-    codigo: '0003',
-    titulo: 'Capacitación equipo técnico',
-    fecha: '(15 abr - 16 abr)',
-    resumen:
-      'Sesión de capacitación para el equipo técnico sobre nuevas herramientas y metodologías de trabajo.',
-  },
-  {
-    id: 4,
-    codigo: '0004',
-    titulo: 'Evaluación de resultados Q1',
-    fecha: '(20 abr - 22 abr)',
-    resumen:
-      'Evaluación trimestral de resultados y métricas de desempeño del primer quarter del año.',
-  },
-  {
-    id: 5,
-    codigo: '0005',
-    titulo: 'Planificación estratégica',
-    fecha: '(25 abr - 30 abr)',
-    resumen:
-      'Sesiones de planificación estratégica para definir objetivos y metas del próximo período.',
-  },
-])
+const items = ref([])
 const snackbar = reactive({
   show: false,
   message: '',
@@ -249,21 +189,36 @@ function openModalNuevo() {
 
 // Cargar actividades al montar el componente
 onMounted(async () => {
-  await loadActividades()
+  await loadActividadesAprobadas()
+  await loadSolicitudes()
 })
 
 // CONSUMO DE SERVICIO - MIS SOLICITUDES
-async function loadActividades() {
+async function loadSolicitudes() {
   try {
-    const actividades = await QuejasService.obtenerActividadesPorUsuario(1)
-    console.log(actividades)
-    items.value = actividades.map((a) => ({
+    const activities = await ActividadesService.obtenerActividadesPorUsuario(user.value.id)
+    items.value = activities.map((a) => ({
       id: a.id,
       codigo: `UNMSM-${a.id}`,
       titulo: a.titulo,
-      fecha: new Date(a.fecha_actividad).toLocaleDateString(),
+      fecha: a.fecha_actividad,
       resumen: a.descripcion,
       descripcion: a.descripcion,
+      tipo: a.tipo
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function loadActividadesAprobadas() {
+  try {
+    const activities = await ActividadesService.obtenerActividadesAprobadas()
+    actividades.value = activities.map((a) => ({
+      codigo: `UNMSM-${a.id}`,
+      fecha: a.fecha_actividad,
+      descripcion: a.descripcion,
+      tipo: 'RECREATIVA'
     }))
   } catch (error) {
     console.error(error)

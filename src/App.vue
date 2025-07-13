@@ -5,7 +5,7 @@
       <n-layout has-sider style="height: 100vh">
         <!-- Sidebar izquierdo -->
         <n-layout-sider bordered width="15%" content-style="padding: 10px 20px;">
-          <UserCard style="margin-bottom: 20px" />
+          <UserCard style="margin-bottom: 20px" :user="user" />
           <SidebarMenu />
           <ButtonAction style="margin-top: 20px" label="Cerrar Sesión" @click="handleLogout" />
         </n-layout-sider>
@@ -50,6 +50,7 @@ import LoginService from './services/LoginService'
 const router = useRouter()
 const route = useRoute()
 const showModal = ref(false)
+const user = ref(LoginService.getCurrentUser())
 
 // Computed para determinar si mostrar el layout con sidebars
 const showLayout = computed(() => {

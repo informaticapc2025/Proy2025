@@ -1,7 +1,9 @@
 export interface Queja {
   asunto: string
+  codigo: string,
+  descripcion: string,
+  estado: string,
+  fecha: string,
   motivo: string
-  descripcion: string
   prueba: string
-  id_usuario: number
 }

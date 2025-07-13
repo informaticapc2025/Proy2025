@@ -4,6 +4,9 @@ export const environment = {
     login: {
       crear: '/login',
     },
+    anuncios: {
+      listar: '/anuncios'
+    },
     actividades: {
       obtenerPorUsuario: '/actividades/usuario',
       obtenerPorId: '/actividades',

@@ -80,7 +80,7 @@
         <v-card-title class="text-h5 font-weight-bold"> Reporte Detallado </v-card-title>
         <v-card-text v-for="(item, index) in selectedRecord" :key="index">
           <p><strong>Fecha:</strong> {{ dateFormatV2(item.fecha) }}</p>
-          <p><strong>Hora marcada:</strong> {{ dateFormatV1(item.hora_marcado) }}</p>
+          <p><strong>Hora marcada:</strong> {{ dateFormatV3(item.hora_marcado) }}</p>
           <p><strong>Alumno:</strong> {{ item.nombre_alumno }}</p>
         </v-card-text>
         <v-card-actions>
@@ -102,7 +102,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import AsistenciaService from '@/services/AsistenciaService'
 import LoginService from '@/services/LoginService'
-import { dateFormatV1, dateFormatV2 } from '@/util/functions.js'
+import { dateFormatV1, dateFormatV2, dateFormatV3 } from '@/util/functions.js'
 
 const selectedYear = ref('2024')
 const selectedMonth = ref('marzo')

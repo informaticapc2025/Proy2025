@@ -56,7 +56,7 @@ const filteredData = computed(() => {
 })
 
 onMounted(async () => {
-  await loadQuejas()
+  chooseQuejas()
 })
 
 function openModal(item) {
@@ -80,7 +80,7 @@ function openModalNuevo() {
   showModal.value = true
 }
 
-async function loadQuejas() {
+async function loadQuejasPorUsuario() {
   try {
     const quejas = await QuejasService.obtenerQuejasPorUsuario(user.value.id)
     data.value = quejas.map((a) => ({
@@ -92,6 +92,29 @@ async function loadQuejas() {
     }))
   } catch (error) {
     console.error(error)
+  }
+}
+
+async function loadQuejas() {
+  try {
+    const quejas = await QuejasService.obtenerTodos()
+    data.value = quejas.map((a) => ({
+      numero: a.codigo,
+      asunto: a.asunto,
+      motivo: a.motivo ?? '',
+      fecha: a.fecha,
+      estado: a.estado
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+function chooseQuejas() {
+  if (user.value.rol === 'admin') {
+    loadQuejas()
+  } else {
+    loadQuejasPorUsuario()
   }
 }
 </script>

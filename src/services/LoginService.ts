@@ -65,6 +65,11 @@ export class LoginService {
     return user ? user.rol : null
   }
 
+  isAdmin() {
+    const user = this.getCurrentUser()
+    return user.rol === 'admin'
+  }
+
   // Función para obtener el nombre del usuario
   getUserName() {
     const user = this.getCurrentUser()

@@ -6,12 +6,12 @@ export function dateFormatV1(value) {
 }
 
 // Return: dd/mm/yyyy (Actual)
-export function currentDate()  {
+export function currentDate() {
   const fecha = new Date()
-  const dia = fecha.getDate().toString().padStart(2, '0');
-  const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-  const anio = fecha.getFullYear();
-  return `${dia}/${mes}/${anio}`;
+  const dia = fecha.getDate().toString().padStart(2, '0')
+  const mes = (fecha.getMonth() + 1).toString().padStart(2, '0')
+  const anio = fecha.getFullYear()
+  return `${dia}/${mes}/${anio}`
 }
 
 // Return: yyyy-mm-dd

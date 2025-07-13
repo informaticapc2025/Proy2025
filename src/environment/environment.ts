@@ -9,6 +9,7 @@ export const environment = {
     },
     actividades: {
       obtenerPorUsuario: '/actividades/usuario',
+      obtenerTodas: '/actividades/admin',
       obtenerPorId: '/actividades',
       obtenerAprobadas: '/actividades/aprobadas',
       crear: '/actividades',

@@ -163,7 +163,7 @@ const headers = [
 ]
 
 onMounted(async () => {
-  await Promise.all[loadActividadesAprobadas(), loadSolicitudes()]
+  await Promise.all[loadActividadesAprobadas(), chooseSolicitudes()]
 })
 
 const editItem = (item) => {
@@ -202,9 +202,34 @@ function openModalNuevo() {
   showModal.value = true
 }
 
-async function loadSolicitudes() {
+function chooseSolicitudes() {
+  if (LoginService.isAdmin()) {
+    loadSolicitudes()
+  } else {
+    loadSolicitudesPorUsuario()
+  }
+}
+
+async function loadSolicitudesPorUsuario() {
   try {
     const activities = await ActividadesService.obtenerActividadesPorUsuario(user.value.id)
+    items.value = activities.map((a) => ({
+      id: a.id,
+      codigo: `UNMSM-${a.id}`,
+      titulo: a.titulo,
+      fecha: a.fecha_actividad,
+      resumen: a.descripcion,
+      descripcion: a.descripcion,
+      tipo: a.tipo,
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function loadSolicitudes() {
+  try {
+    const activities = await ActividadesService.obtenerTodas()
     items.value = activities.map((a) => ({
       id: a.id,
       codigo: `UNMSM-${a.id}`,

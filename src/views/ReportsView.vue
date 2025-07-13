@@ -111,7 +111,7 @@ async function loadQuejas() {
 }
 
 function chooseQuejas() {
-  if (user.value.rol === 'admin') {
+  if (LoginService.isAdmin()) {
     loadQuejas()
   } else {
     loadQuejasPorUsuario()

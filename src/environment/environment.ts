@@ -35,9 +35,14 @@ export const environment = {
     },
     citas: {
       obtenerSolicitadasPorUsuario: '/citas/alumno',
-      obtenerPendientes: 'citas/pendientes',
-      obtenerCulminadas: 'citas/culminadas',
-      consultar: 'citas'
+      obtenerPendientes: '/citas/pendientes',
+      obtenerCulminadas: '/citas/culminadas',
+      consultar: '/citas'
+    },
+    asistencia: {
+      obtenerFechasMarcadasPorUsuario: '/asistencia/fechas',
+      obtenerDetallePorFechaYUsuario: '/asistencia/detalle'
     }
+
   },
 }

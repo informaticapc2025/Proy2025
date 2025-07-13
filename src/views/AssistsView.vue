@@ -48,7 +48,7 @@
           </v-col>
         </v-row>
 
-        <div v-for="(record, index) in attendanceRecords" :key="index">
+        <div v-for="(record, index) in asistenciasMarcadas" :key="index">
           <v-row
             class="ma-0 pa-4 align-center"
             :class="{ 'bg-grey-lighten-4': index % 2 === 0 }"
@@ -56,65 +56,36 @@
           >
             <v-col cols="6" class="pa-2">
               <span class="text-body-1 font-weight-medium text-grey-darken-2">
-                {{ record.fecha }}
+                {{ dateFormatV2(record.fecha) }}
               </span>
             </v-col>
             <v-col cols="6" class="pa-2 text-center">
               <v-btn
-                :color="getStatusColor(record.status)"
+                color="warning"
                 size="small"
                 style="border-radius: 16px; text-transform: none; font-weight: 500"
                 min-width="100px"
                 @click="handleStatusClick(record)"
               >
-                {{ getStatusText(record.status) }}
+                {{ 'Ver detalles' }}
               </v-btn>
             </v-col>
           </v-row>
         </div>
       </v-card>
-      <v-row class="mt-4">
-        <v-col cols="12">
-          <v-card class="pa-4" style="border-radius: 12px; background-color: #f8f9fa">
-            <h4 class="text-h6 font-weight-bold mb-3 text-grey-darken-2">Resumen del Mes</h4>
-            <v-row>
-              <v-col cols="4" class="text-center">
-                <div class="text-h5 font-weight-bold text-green">
-                  {{ attendanceSummary.attended }}
-                </div>
-                <div class="text-body-2 text-grey-darken-1">Asistió</div>
-              </v-col>
-              <v-col cols="4" class="text-center">
-                <div class="text-h5 font-weight-bold text-red">
-                  {{ attendanceSummary.absent }}
-                </div>
-                <div class="text-body-2 text-grey-darken-1">No asistió</div>
-              </v-col>
-              <v-col cols="4" class="text-center">
-                <div class="text-h5 font-weight-bold text-blue">
-                  {{ attendanceSummary.reports }}
-                </div>
-                <div class="text-body-2 text-grey-darken-1">Reportes</div>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
     </v-card>
 
     <v-dialog v-model="reportDialog" max-width="500px">
       <v-card class="pa-4">
         <v-card-title class="text-h5 font-weight-bold"> Reporte Detallado </v-card-title>
-        <v-card-text>
-          <p><strong>Fecha:</strong> {{ selectedRecord?.fecha }}</p>
-          <p><strong>Estado:</strong> {{ getStatusText(selectedRecord?.status) }}</p>
-          <p><strong>Hora de entrada:</strong> 08:30 AM</p>
-          <p><strong>Hora de salida:</strong> 17:00 PM</p>
-          <p><strong>Observaciones:</strong> Asistencia completa registrada correctamente.</p>
+        <v-card-text v-for="(item, index) in selectedRecord" :key="index">
+          <p><strong>Fecha:</strong> {{ dateFormatV2(item.fecha) }}</p>
+          <p><strong>Hora marcada:</strong> {{ dateFormatV1(item.hora_marcado) }}</p>
+          <p><strong>Alumno:</strong> {{ item.nombre_alumno }}</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" @click="reportDialog = false"> Cerrar </v-btn>
+          <v-btn color="primary" @click="close()"> Cerrar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -128,13 +99,18 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import AsistenciaService from '@/services/AsistenciaService'
+import LoginService from '@/services/LoginService'
+import { dateFormatV1, dateFormatV2 } from '@/util/functions.js'
 
 const selectedYear = ref('2024')
 const selectedMonth = ref('marzo')
 const reportDialog = ref(false)
-const selectedRecord = ref(null)
-
+const selectedRecord = ref([])
+const asistenciasMarcadas = ref([])
+const user = ref(LoginService.getCurrentUser())
+const snackbar = reactive({ show: false, message: '', color: 'success' })
 const years = ['2022', '2023', '2024', '2025']
 const months = [
   { name: 'Enero', value: 'enero' },
@@ -151,81 +127,45 @@ const months = [
   { name: 'Diciembre', value: 'diciembre' },
 ]
 
-const attendanceRecords = ref([
-  { fecha: 'Lunes 3', status: 'report' },
-  { fecha: 'Martes 4', status: 'absent' },
-  { fecha: 'Miércoles 5', status: 'absent' },
-  { fecha: 'Jueves 6', status: 'attended' },
-  { fecha: 'Viernes 7', status: 'attended' },
-  { fecha: 'Lunes 10', status: 'report' },
-  { fecha: 'Martes 11', status: 'attended' },
-  { fecha: 'Miércoles 12', status: 'absent' },
-])
-
-const snackbar = reactive({
-  show: false,
-  message: '',
-  color: 'success',
+onMounted(async () => {
+  await Promise.all[loadAsistenciasMarcadasPorUsuario()]
 })
 
-// Función para obtener color del estado
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'attended':
-      return 'success'
-    case 'absent':
-      return 'error'
-    case 'report':
-      return 'success'
-    default:
-      return 'grey'
-  }
-}
-
-// Función para obtener texto del estado
-const getStatusText = (status) => {
-  switch (status) {
-    case 'attended':
-      return 'Asistió'
-    case 'absent':
-      return 'No asistió'
-    case 'report':
-      return 'Ver reporte'
-    default:
-      return 'Sin datos'
-  }
-}
-
-// Resumen de asistencia
-const attendanceSummary = computed(() => {
-  const attended = attendanceRecords.value.filter((r) => r.status === 'attended').length
-  const absent = attendanceRecords.value.filter((r) => r.status === 'absent').length
-  const reports = attendanceRecords.value.filter((r) => r.status === 'report').length
-
-  return { attended, absent, reports }
-})
-
-// Función para manejar click en estado
-const handleStatusClick = (record) => {
-  if (record.status === 'report') {
-    selectedRecord.value = record
+async function handleStatusClick(record) {
+    const asistencias = await AsistenciaService.obtenerAsistenciaPorFechaYUsuario(record.usuario, record.fecha)
+    selectedRecord.value = asistencias.map((a) => ({
+      fecha: a.fecha,
+      hora_marcado: a.hora_marcado,
+      id: a.id,
+      id_usuario: a.id_usuario,
+      nombre_alumno: a.nombre_alumno,
+    }))
     reportDialog.value = true
-  } else {
-    snackbar.message = `Estado: ${getStatusText(record.status)} - ${record.fecha}`
-    snackbar.color = record.status === 'attended' ? 'success' : 'error'
-    snackbar.show = true
-  }
 }
 
-// Función para actualizar datos de asistencia
 const updateAttendanceData = () => {
   snackbar.message = `Datos actualizados para ${selectedMonth.value} ${selectedYear.value}`
   snackbar.color = 'info'
   snackbar.show = true
-
-  // Aquí podrías hacer una llamada a la API para obtener nuevos datos
   console.log('Actualizando datos para:', selectedYear.value, selectedMonth.value)
 }
+
+const close = () => {
+  reportDialog.value = false
+  selectedRecord.value = []
+}
+
+async function loadAsistenciasMarcadasPorUsuario() {
+  const asistencias = await AsistenciaService.obtenerFechasMarcadasPorUsuario(user.value.id)
+  asistencias.forEach((asistencia) => {
+    asistenciasMarcadas.value.push({
+      fecha: asistencia,
+      usuario: user.value.id
+    })
+  })
+}
+
+
 </script>
 
 <style scoped>

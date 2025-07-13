@@ -2,7 +2,7 @@
   <n-card class="user-card">
     <div style="display: flex; align-items: center; gap: 5px">
       <i class="fa-solid fa-circle icon-green"></i>
-      <p>{{ props.user.nombre }}</p>
+      <p>{{ props.user?.nombre }}</p>
     </div>
   </n-card>
  

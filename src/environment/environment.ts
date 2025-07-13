@@ -26,8 +26,12 @@ export const environment = {
       obtenerCumpleanos: '/cumpleaños'
     },
     permisos: {
-      crear: '/api/permisos/salida',
-      obtenerPorUsuario: '/api/permisos/salida/usuario'
+      crearSalida: '/api/permisos/salida',
+      obtenerSalidaPorUsuario: '/api/permisos/salida/usuario',
+      todasLasSalidas: '/api/permisos/salida/admin',
+      crearAreaComun: '/api/permisos/area-comun',
+      obtenerAreaComunPorUsuario: '/api/permisos/area-comun/usuario',
+      todasLasAreaComun: '/api/permisos/area-comun/admin',
     }
   },
 }

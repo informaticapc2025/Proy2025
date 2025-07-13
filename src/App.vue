@@ -50,7 +50,7 @@ import LoginService from './services/LoginService'
 const router = useRouter()
 const route = useRoute()
 const showModal = ref(false)
-const user = ref(LoginService.getCurrentUser())
+const user = ref(null)
 
 // Computed para determinar si mostrar el layout con sidebars
 const showLayout = computed(() => {
@@ -58,6 +58,7 @@ const showLayout = computed(() => {
   if (publicRoutes.includes(route.name as string)) {
     return false
   }
+  user.value = LoginService.getCurrentUser()
   return LoginService.isAuthenticated()
 })
 

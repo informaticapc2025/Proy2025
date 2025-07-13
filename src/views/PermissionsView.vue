@@ -103,13 +103,14 @@
           style="border-radius: 16px; background-color: rgba(200, 210, 150, 0.3)"
         >
           <h3 class="text-h6 font-weight-bold mb-4 text-grey-darken-2">Reservas</h3>
-          <div v-if="permisos.length === 0" class="text-center pa-8">
+          <div v-if="solicitudes.length === 0" class="text-center pa-8">
             <v-icon size="48" color="grey-lighten-1" class="mb-3"> mdi-calendar-blank </v-icon>
             <p class="text-body-2 text-grey">No tienes reservas registradas</p>
           </div>
           <div v-else>
             <v-card
-              v-for="permiso in permisos"
+              v-if="activeTab === 'solicitud'"
+              v-for="permiso in solicitudes"
               :key="permiso.id"
               class="mb-3 pa-3"
               variant="outlined"
@@ -142,6 +143,41 @@
                 </v-btn>
               </div>
             </v-card>
+            <v-card
+              v-else
+              v-for="areaComun in areaComunItems"
+              :key="areaComun.id"
+              class="mb-3 pa-3"
+              variant="outlined"
+              style="border-radius: 12px"
+            >
+              <div class="d-flex justify-space-between align-center">
+                <div>
+                  <p class="text-body-1 font-weight-medium mb-1">
+                    {{ dateFormatV2(areaComun.fecha) }}
+                    {{ areaComun.horario }}
+                  </p>
+                  <div class="d-flex flex-column gap-1">
+                    <v-chip
+                      :color="getStatusColor(areaComun.estado)"
+                      size="small"
+                      variant="flat"
+                      class="text-caption"
+                    >
+                      {{ areaComun.estado }}
+                    </v-chip>
+                  </div>
+                </div>
+                <v-btn
+                  icon="mdi-close"
+                  variant="text"
+                  size="small"
+                  color="red"
+                  @click="deleteReserva(areaComun.id)"
+                >
+                </v-btn>
+              </div>
+            </v-card>
           </div>
         </v-card>
       </v-col>
@@ -160,7 +196,8 @@ import { dateFormatDB, dateFormatV2 } from '@/util/functions.js'
 import LoginService from '@/services/LoginService'
 import PermisosService from '@/services/PermisosService'
 
-const permisos = ref([])
+const solicitudes = ref([])
+const areaComunItems = ref([])
 const activeTab = ref('solicitud')
 const user = ref(LoginService.getCurrentUser())
 const form = reactive({ desde: '', hasta: '', motivo: '' })
@@ -188,7 +225,8 @@ const dateOptions = [
 ]
 
 onMounted(async () => {
-  await loadPermisosPorUsuario()
+  chooosePermisosDeSalida()
+  chooosePermisosDeAreaComun()
 })
 
 const getStatusColor = (estado) => {
@@ -206,9 +244,9 @@ const getStatusColor = (estado) => {
 
 const deleteReserva = (id) => {
   if (confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
-    const index = permisos.value.findIndex((r) => r.id === id)
+    const index = solicitudes.value.findIndex((r) => r.id === id)
     if (index > -1) {
-      permisos.value.splice(index, 1)
+      solicitudes.value.splice(index, 1)
       snackbar.message = 'Reserva eliminada'
       snackbar.color = 'info'
       snackbar.show = true
@@ -223,8 +261,8 @@ async function submitRequest() {
     snackbar.show = true
     return
   }
-  await PermisosService.crearPermiso(newReserva)
-  permisos.value.unshift(newReserva)
+  await PermisosService.crearPermisoSalida(newReserva)
+  solicitudes.value.unshift(newReserva)
   form.desde = ''
   form.hasta = ''
   form.motivo = ''
@@ -233,9 +271,9 @@ async function submitRequest() {
   snackbar.show = true
 }
 
-async function loadPermisosPorUsuario() {
-  const items = await PermisosService.obtenerPermisosPorUsuario(user.value.id)
-  permisos.value = items.map((a) => ({
+async function loadPermisosDeSalidaPorUsuario() {
+  const items = await PermisosService.obtenerPermisosDeSalidaPorUsuario(user.value.id)
+  solicitudes.value = items.map((a) => ({
     estado: a.estado,
     fecha_regreso: a.fecha_regreso,
     fecha_salida: a.fecha_salida,
@@ -243,6 +281,58 @@ async function loadPermisosPorUsuario() {
     id_usuario: a.id_usuario,
     motivo: a.descripcion || '',
   }))
+}
+
+async function loadPermisosDeSalida() {
+  const items = await PermisosService.obtenerTodosLosPermisosDeSalida()
+  solicitudes.value = items.map((a) => ({
+    estado: a.estado,
+    fecha_regreso: a.fecha_regreso,
+    fecha_salida: a.fecha_salida,
+    id: a.id,
+    id_usuario: a.id_usuario,
+    motivo: a.descripcion || '',
+  }))
+}
+
+async function loadPermisosDeAreaComunPorUsuario() {
+  const items = await PermisosService.obtenerPermisosDeAreaComunPorUsuario(user.value.id)
+  areaComunItems.value = items.map((a) => ({
+    estado: a.estado,
+    fecha: a.fecha,
+    horario: a.horario,
+    id: a.id,
+    id_usuario: a.id_usuario,
+    lugar: a.lugar || '',
+  }))
+}
+
+async function loadPermisosDeAreaComun() {
+  const items = await PermisosService.obtenerTodosLosPermisosDeAreaComun()
+  areaComunItems.value = items.map((a) => ({
+    estado: a.estado,
+    fecha: a.fecha,
+    horario: a.horario,
+    id: a.id,
+    id_usuario: a.id_usuario,
+    lugar: a.lugar || '',
+  }))
+}
+
+function chooosePermisosDeSalida() {
+  if (LoginService.isAdmin()) {
+    loadPermisosDeSalida()
+  } else {
+    loadPermisosDeSalidaPorUsuario()
+  }
+}
+
+function chooosePermisosDeAreaComun() {
+  if (LoginService.isAdmin()) {
+    loadPermisosDeAreaComun()
+  } else {
+    loadPermisosDeAreaComunPorUsuario()
+  }
 }
 </script>
 <style scoped>

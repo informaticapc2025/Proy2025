@@ -59,5 +59,6 @@ def ver_aprobadas():
         'id': a.id_actividad,
         'titulo': a.titulo,
         'descripcion': a.descripcion,
+        'tipo': a.tipo,
         'fecha_actividad': a.fecha_actividad.strftime('%d/%m/%Y'),
     } for a in actividades])

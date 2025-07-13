@@ -34,7 +34,7 @@
         </tr>
       </template>
     </v-data-table>
-    <ModalQueja v-model="showModal" :item="selectedItem" :user="user" @agregar-queja="agregarQueja" />
+    <ModalQueja v-model="showModal" :item="selectedItem" :user="user" :mode="isView"  @agregar-queja="agregarQueja" />
   </div>
 </template>
 <script setup>
@@ -45,6 +45,7 @@ import LoginService from '@/services/LoginService'
 
 
 const data = ref([])
+const isView = ref("")
 const showModal = ref(false)
 const selectedItem = ref(null)
 const selectedAddress = ref(null)
@@ -62,6 +63,7 @@ onMounted(async () => {
 function openModal(item) {
   selectedItem.value = item
   showModal.value = true
+  isView.value = true
 }
 
 function agregarQueja(queja) {
@@ -77,6 +79,7 @@ function openModalNuevo() {
     estado: '',
     descripcion: '',
   }
+  isView.value = false
   showModal.value = true
 }
 
@@ -88,7 +91,8 @@ async function loadQuejasPorUsuario() {
       asunto: a.asunto,
       motivo: a.motivo ?? '',
       fecha: a.fecha,
-      estado: a.estado
+      estado: a.estado,
+      descripcion: a.descripcion
     }))
   } catch (error) {
     console.error(error)

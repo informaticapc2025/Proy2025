@@ -27,6 +27,14 @@ export class ActividadesService {
       .then((res: { data: Actividad[] }) => res.data)
   }
 
+  async obtenerActividadesPorUsuario(
+    usuarioId: number,
+  ): Promise<Actividad[]> {
+    return axios
+      .get<Actividad[]>(`${this.urlObtenerPorUsuario}/${usuarioId}`)
+      .then((res: { data: Actividad[] }) => res.data)
+  }
+  
   async obtenerActividadesAprobadas(): Promise<Actividad[]> {
     return axios
       .get<Actividad[]>(this.urlObtenerAprobadas)

@@ -22,6 +22,7 @@
             density="comfortable"
             hide-details
             class="custom-input"
+            :disabled="mode"
           ></v-text-field>
         </div>
 
@@ -34,6 +35,7 @@
             density="comfortable"
             hide-details
             class="custom-input"
+            :disabled="mode"
           ></v-select>
         </div>
 
@@ -46,6 +48,7 @@
             rows="4"
             hide-details
             class="custom-input"
+            :disabled="mode"
           ></v-textarea>
         </div>
 
@@ -65,12 +68,13 @@
               type="file"
               accept="image/*"
               style="display: none"
+              :disabled="mode"
               @change="handleFileSelect"
             />
           </v-card>
         </div>
 
-        <div class="d-flex justify-center">
+        <div v-show="mode" class="d-flex justify-center">
           <v-btn
             type="submit"
             color="#e91e63"
@@ -99,7 +103,8 @@ const motivosOptions = ['Robo', 'Daños a la propiedad', 'Ruido excesivo', 'Acos
 const props = defineProps({
   modelValue: Boolean,
   item: Object,
-  user: Object
+  user: Object,
+  mode: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue', 'agregarQueja'])

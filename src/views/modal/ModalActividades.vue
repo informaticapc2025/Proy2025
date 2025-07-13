@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" max-width="500px" persistent>
     <v-card class="pa-4" style="border-radius: 16px">
       <v-card-title class="d-flex justify-space-between align-center pa-0 mb-4">
-        <h2 class="text-h5 font-weight-bold" style="color: #e91e63">Realizar una Queja</h2>
+        <h2 class="text-h5 font-weight-bold" style="color: #e91e63">Realizar una Actividad</h2>
         <button
           @click="dialog = false"
           style="background: none; border: none; cursor: pointer"

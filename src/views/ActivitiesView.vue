@@ -13,7 +13,7 @@
           <div v-for="(actividad, index) in actividades" :key="index" class="actividad-card">
             <div class="info">
               <div class="titulo-actividad">
-                📌 <strong>{{ actividad.nombre }}</strong>
+                📌 <strong>{{ actividad.titulo }}</strong>
                 <div class="fecha">({{ actividad.fecha }})</div>
               </div>
               <div class="descripcion">
@@ -251,7 +251,8 @@ async function loadActividadesAprobadas() {
       codigo: `UNMSM-${a.id}`,
       fecha: a.fecha_actividad,
       descripcion: a.descripcion,
-      tipo: 'RECREATIVA',
+      titulo: a.titulo,
+      tipo: a.tipo.toUpperCase(),
     }))
   } catch (error) {
     console.error(error)

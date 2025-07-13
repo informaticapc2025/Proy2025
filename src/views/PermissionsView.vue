@@ -61,7 +61,7 @@
                     class="mb-4 custom-alert"
                     density="compact"
                   >
-                    <span class="text-caption text-red">
+                    <span class="text-caption text-black">
                       *Según el reglamento tu rango de salida de la ciudad universitaria tendrá a
                       ser revisada para su aprobación.
                     </span>
@@ -261,6 +261,7 @@ async function submitRequest() {
     snackbar.show = true
     return
   }
+  console.log(newReserva)
   await PermisosService.crearPermisoSalida(newReserva)
   solicitudes.value.unshift(newReserva)
   form.desde = ''

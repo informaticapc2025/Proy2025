@@ -6,24 +6,19 @@
     </div>
 
     <n-list>
-      <n-list-item>
-        <div style="display: flex; align-items: center; gap: 2px">
-          <img :src="cake" alt="cumpleaños" style="width: 20px; height: 25px" />
-          <span>¡Feliz cumpleaños, Juan!</span>
-        </div>
-      </n-list-item>
-      <n-list-item>
-        <div style="display: flex; align-items: center; gap: 2px">
-          <img :src="cake" alt="cumpleaños" style="width: 20px; height: 25px" />
-          <span>¡Feliz cumpleaños, Juan!</span>
-        </div>
-      </n-list-item>
-      <n-list-item>
-        <div style="display: flex; align-items: center; gap: 2px">
-          <img :src="cake" alt="cumpleaños" style="width: 20px; height: 25px" />
-          <span>¡Feliz cumpleaños, Juan!</span>
-        </div>
-      </n-list-item>
+      <template v-if="cumpleanosItems.length > 0">
+        <n-list-item v-for="item in cumpleanosItems" :key="item.id">
+          <div style="display: flex; align-items: center; gap: 2px">
+            <img :src="cake" alt="cumpleaños" style="width: 20px; height: 25px" />
+            <span>¡Feliz cumpleaños, {{ item.nombre }}!</span>
+          </div>
+        </n-list-item>
+      </template>
+      <template v-else>
+        <n-list-item>
+          <span>No hay cumpleaños hoy</span>
+        </n-list-item>
+      </template>
     </n-list>
   </n-card>
 
@@ -56,6 +51,7 @@ import { onMounted, ref } from 'vue'
 const router = useRouter()
 const route = useRoute()
 const reconocimientoItems = ref([])
+const cumpleanosItems = ref([])
 
 async function loadReconocimientos() {
   try {
@@ -63,6 +59,19 @@ async function loadReconocimientos() {
     reconocimientoItems.value = reconocimientos.map((a) => ({
       descripcion: a.descripcion,
       fecha: a.fecha,
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function loadCumpleanos() {
+  try {
+    const cumpleanos = await ReconocimientosService.obtenerCumpleanos()
+    cumpleanosItems.value = cumpleanos.map((a) => ({
+      id: a.id,
+      nombre: a.nombre,
+      fecha_cumpleanos: a.fecha_cumpleaños
     }))
   } catch (error) {
     console.error(error)
@@ -77,6 +86,7 @@ function formatDate(fecha) {
 
 onMounted(async () => {
   await loadReconocimientos()
+  await loadCumpleanos()
 })
 </script>
 

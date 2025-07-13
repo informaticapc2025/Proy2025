@@ -17,10 +17,12 @@ export const environment = {
     },
     quejas: {
       obtenerPorUsuario: '/quejas/usuario',
+      listar: '/quejas',
       crear: '/quejas'
     },
     reconocimientos: {
-      obtenerReconocimientos: '/reconocimientos'
+      obtenerReconocimientos: '/reconocimientos',
+      obtenerCumpleanos: '/cumpleaños'
     },
     permisos: {
       crear: '/api/permisos/salida',

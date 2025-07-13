@@ -4,7 +4,6 @@
       <v-tab :value="1">Actividades</v-tab>
       <v-tab :value="2">Mis Solicitudes</v-tab>
     </v-tabs>
-
     <v-tabs-window v-model="tab">
       <v-tabs-window-item :value="1">
         <div class="text-right">
@@ -29,7 +28,6 @@
           </div>
         </v-container>
       </v-tabs-window-item>
-
       <v-tabs-window-item :value="2">
         <v-container fluid>
           <div class="pa-4">
@@ -46,25 +44,21 @@
                     {{ item.codigo }}
                   </span>
                 </template>
-
                 <template v-slot:item.titulo="{ item }">
                   <span class="text-body-2 font-weight-medium">
                     {{ item.titulo }}
                   </span>
                 </template>
-
                 <template v-slot:item.fecha="{ item }">
                   <span class="text-body-2 text-grey-darken-1">
                     {{ item.fecha }}
                   </span>
                 </template>
-
                 <template v-slot:item.resumen="{ item }">
                   <span class="text-body-2 text-grey-darken-1">
                     {{ item.descripcion }}
                   </span>
                 </template>
-
                 <template v-slot:item.acciones="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ props }">
@@ -100,7 +94,6 @@
                 </template>
               </v-data-table>
             </v-card>
-
             <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
               {{ snackbar.message }}
               <template v-slot:actions>
@@ -114,16 +107,24 @@
   </v-card>
   <ModalActividades v-model="showModal" :item="selectedItem" />
 </template>
-
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
 import { NButton } from 'naive-ui'
+import { ref, reactive, onMounted } from 'vue'
+import LoginService from '@/services/LoginService'
 import ActividadesService from '@/services/ActividadesService'
 import ModalActividades from './modal/ModalActividades.vue'
-import LoginService from '@/services/LoginService'
+
 const tab = ref(1)
-const user = ref(LoginService.getCurrentUser())
+const items = ref([])
 const actividades = ref([])
+const showModal = ref(false)
+const selectedItem = ref(null)
+const user = ref(LoginService.getCurrentUser())
+const snackbar = reactive({
+  show: false,
+  message: '',
+  color: 'success',
+})
 const headers = [
   {
     title: 'Código',
@@ -160,22 +161,36 @@ const headers = [
     width: '100px',
   },
 ]
-const items = ref([])
-const snackbar = reactive({
-  show: false,
-  message: '',
-  color: 'success',
-})
-const showModal = ref(false)
-const selectedItem = ref(null)
 
-function openModal(item) {
-  selectedItem.value = item
-  showModal.value = true
+onMounted(async () => {
+  await Promise.all[loadActividadesAprobadas(), loadSolicitudes()]
+})
+
+const editItem = (item) => {
+  snackbar.message = `Editando elemento: ${item.titulo}`
+  snackbar.color = 'info'
+  snackbar.show = true
+}
+
+const viewItem = (item) => {
+  snackbar.message = `Viendo detalles de: ${item.titulo}`
+  snackbar.color = 'info'
+  snackbar.show = true
+}
+
+const deleteItem = (item) => {
+  if (confirm(`¿Estás seguro de que quieres eliminar "${item.titulo}"?`)) {
+    const index = items.value.findIndex((i) => i.id === item.id)
+    if (index > -1) {
+      items.value.splice(index, 1)
+      snackbar.message = `Elemento eliminado: ${item.titulo}`
+      snackbar.color = 'success'
+      snackbar.show = true
+    }
+  }
 }
 
 function openModalNuevo() {
-  console.log('Abrir modal para nueva actividad')
   selectedItem.value = {
     numero: '',
     asunto: '',
@@ -187,13 +202,6 @@ function openModalNuevo() {
   showModal.value = true
 }
 
-// Cargar actividades al montar el componente
-onMounted(async () => {
-  await loadActividadesAprobadas()
-  await loadSolicitudes()
-})
-
-// CONSUMO DE SERVICIO - MIS SOLICITUDES
 async function loadSolicitudes() {
   try {
     const activities = await ActividadesService.obtenerActividadesPorUsuario(user.value.id)
@@ -204,7 +212,7 @@ async function loadSolicitudes() {
       fecha: a.fecha_actividad,
       resumen: a.descripcion,
       descripcion: a.descripcion,
-      tipo: a.tipo
+      tipo: a.tipo,
     }))
   } catch (error) {
     console.error(error)
@@ -218,37 +226,10 @@ async function loadActividadesAprobadas() {
       codigo: `UNMSM-${a.id}`,
       fecha: a.fecha_actividad,
       descripcion: a.descripcion,
-      tipo: 'RECREATIVA'
+      tipo: 'RECREATIVA',
     }))
   } catch (error) {
     console.error(error)
-  }
-}
-
-//Mis actividades
-const editItem = (item) => {
-  snackbar.message = `Editando elemento: ${item.titulo}`
-  snackbar.color = 'info'
-  snackbar.show = true
-  console.log('Editar:', item)
-}
-
-const viewItem = (item) => {
-  snackbar.message = `Viendo detalles de: ${item.titulo}`
-  snackbar.color = 'info'
-  snackbar.show = true
-  console.log('Ver:', item)
-}
-
-const deleteItem = (item) => {
-  if (confirm(`¿Estás seguro de que quieres eliminar "${item.titulo}"?`)) {
-    const index = items.value.findIndex((i) => i.id === item.id)
-    if (index > -1) {
-      items.value.splice(index, 1)
-      snackbar.message = `Elemento eliminado: ${item.titulo}`
-      snackbar.color = 'success'
-      snackbar.show = true
-    }
   }
 }
 </script>

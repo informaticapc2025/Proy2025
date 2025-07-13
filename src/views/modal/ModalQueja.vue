@@ -87,8 +87,14 @@
 </template>
 
 <script setup>
+import { currentDate } from '@/util/functions.js'
 import { ref, reactive, watch, computed } from 'vue'
 import QuejasService from '@/services/QuejasService'
+
+const fileInput = ref(null)
+const selectedFile = ref(null)
+const form = reactive({ numero: '', asunto: '', motivo: '', fecha: '', estado: '', descripcion: ''})
+const motivosOptions = ['Robo', 'Daños a la propiedad', 'Ruido excesivo', 'Acoso', 'Incumplimiento de normas', 'Otro']
 
 const props = defineProps({
   modelValue: Boolean,
@@ -96,31 +102,12 @@ const props = defineProps({
   user: Object
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'agregarQueja'])
+
 const dialog = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
 })
-const fileInput = ref(null)
-const selectedFile = ref(null)
-
-const form = reactive({
-  numero: '',
-  asunto: '',
-  motivo: '',
-  fecha: '',
-  estado: '',
-  descripcion: '',
-})
-
-const motivosOptions = [
-  'Robo',
-  'Daños a la propiedad',
-  'Ruido excesivo',
-  'Acoso',
-  'Incumplimiento de normas',
-  'Otro',
-]
 
 watch(
   () => props.item,
@@ -156,13 +143,19 @@ async function submitComplaint() {
   formData.append('descripcion', form.descripcion);
   formData.append('id_usuario', props.user.id);
   formData.append('prueba', selectedFile.value);
-
-  await QuejasService.crearQueja(formData);
-
+  const response = await QuejasService.crearQueja(formData);
+  emit('agregarQueja', {
+    asunto: form.asunto,    
+    numero: response.codigo_reporte,
+    descripcion: form.descripcion,    
+    estado: 'Recibido',
+    fecha: currentDate(), 
+    motivo: form.motivo,     
+    prueba: ''
+  })
   dialog.value = false;
   alert('Queja enviada exitosamente');
 }
-
 </script>
 
 <style scoped>

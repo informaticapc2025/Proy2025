@@ -1,7 +1,7 @@
 <template>
   <div class="posts-container">
     <div class="post-card" v-for="post in posts" :key="post.id">
-      <div class="post-date">{{ formatDate(post.fecha_publicacion) }}</div>
+      <div class="post-date">{{ dateFormatV1(post.fecha_publicacion) }}</div>
       <div class="post-text">{{ post.descripcion }}</div>
       <img v-if="post.imagen" :src="post.imagen" alt="Imagen del anuncio" class="post-image" />
     </div>
@@ -10,21 +10,18 @@
 
 <script>
 import AnunciosService from '@/services/AnunciosService'
+import { dateFormatV1 } from '@/util/functions.js'
 
 export default {
   name: 'PostsView',
   data() {
     return {
       posts: [],
+      dateFormatV1,
     }
   },
   methods: {
-    formatDate(dateStr) {
-      const date = new Date(dateStr)
-      const options = { day: '2-digit', month: 'long', year: 'numeric' }
-      return date.toLocaleDateString('es-ES', options)
-    },
-    async fetchPosts() {
+    async loadPublicaciones() {
       try {
         this.posts = await AnunciosService.listarAnuncios()
       } catch (error) {
@@ -33,7 +30,7 @@ export default {
     },
   },
   mounted() {
-    this.fetchPosts()
+    this.loadPublicaciones()
   },
 }
 </script>

@@ -16,14 +16,12 @@
               <span :class="{ 'active-tab-text': activeTab === 'area-comun' }"> Área Común </span>
             </v-tab>
           </v-tabs>
-
           <v-window v-model="activeTab">
             <v-window-item value="solicitud">
               <div class="mb-4">
                 <p class="text-body-2 mb-4 text-grey-darken-2">
                   Registre el rango de días que estarás fuera de la vivienda universitaria:
                 </p>
-
                 <v-form @submit.prevent="submitRequest">
                   <div class="mb-3">
                     <label class="text-body-2 font-weight-medium mb-2 d-block"> Desde </label>
@@ -36,7 +34,6 @@
                       class="custom-select"
                     ></v-select>
                   </div>
-
                   <div class="mb-3">
                     <label class="text-body-2 font-weight-medium mb-2 d-block"> Hasta </label>
                     <v-select
@@ -48,7 +45,6 @@
                       class="custom-select"
                     ></v-select>
                   </div>
-
                   <div class="mb-4">
                     <label class="text-body-2 font-weight-medium mb-2 d-block"> Motivo </label>
                     <v-textarea
@@ -59,7 +55,6 @@
                       class="custom-textarea"
                     ></v-textarea>
                   </div>
-
                   <v-alert
                     type="warning"
                     variant="text"
@@ -71,7 +66,6 @@
                       ser revisada para su aprobación.
                     </span>
                   </v-alert>
-
                   <div class="d-flex justify-start">
                     <v-btn
                       type="submit"
@@ -91,7 +85,6 @@
                 </v-form>
               </div>
             </v-window-item>
-
             <v-window-item value="area-comun">
               <div class="text-center pa-8">
                 <v-icon size="64" color="grey-lighten-1" class="mb-4"> mdi-home-group </v-icon>
@@ -104,19 +97,16 @@
           </v-window>
         </v-card>
       </v-col>
-
       <v-col cols="12" md="6">
         <v-card
           class="pa-4"
           style="border-radius: 16px; background-color: rgba(200, 210, 150, 0.3)"
         >
           <h3 class="text-h6 font-weight-bold mb-4 text-grey-darken-2">Reservas</h3>
-
-          <div v-if="reservas.length === 0" class="text-center pa-8">
+          <div v-if="permisos.length === 0" class="text-center pa-8">
             <v-icon size="48" color="grey-lighten-1" class="mb-3"> mdi-calendar-blank </v-icon>
             <p class="text-body-2 text-grey">No tienes reservas registradas</p>
           </div>
-
           <div v-else>
             <v-card
               v-for="permiso in permisos"
@@ -128,7 +118,8 @@
               <div class="d-flex justify-space-between align-center">
                 <div>
                   <p class="text-body-1 font-weight-medium mb-1">
-                    {{ formatDate(permiso.fecha_salida) }} al {{ formatDate(permiso.fecha_regreso) }}
+                    {{ dateFormatV2(permiso.fecha_salida) }} al
+                    {{ dateFormatV2(permiso.fecha_regreso) }}
                   </p>
                   <div class="d-flex flex-column gap-1">
                     <v-chip
@@ -155,8 +146,6 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Snackbar para notificaciones -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
       <template v-slot:actions>
@@ -165,23 +154,23 @@
     </v-snackbar>
   </div>
 </template>
-
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import PermisosService from '@/services/PermisosService'
+import { dateFormatDB, dateFormatV2 } from '@/util/functions.js'
 import LoginService from '@/services/LoginService'
+import PermisosService from '@/services/PermisosService'
 
+const permisos = ref([])
 const activeTab = ref('solicitud')
 const user = ref(LoginService.getCurrentUser())
-const permisos = ref([])
-// Formulario
-const form = reactive({
-  desde: '',
-  hasta: '',
-  motivo: '',
-})
-
-// Opciones de fechas (simuladas)
+const form = reactive({ desde: '', hasta: '', motivo: '' })
+const snackbar = reactive({ show: false, message: '', color: 'success' })
+const newReserva = {
+  id_usuario: user.value.id,
+  fecha_salida: dateFormatDB(form.desde),
+  fecha_regreso: dateFormatDB(form.hasta),
+  motivo: form.motivo,
+}
 const dateOptions = [
   '01/01/2025',
   '02/01/2025',
@@ -198,36 +187,10 @@ const dateOptions = [
   '24/04/2025',
 ]
 
-// Reservas existentes
-const reservas = ref([
-  {
-    id: 1,
-    fechaInicio: '17/04/25',
-    fechaFin: '24/04/25',
-    estado: 'Aprobado',
-  },
-  {
-    id: 2,
-    fechaInicio: '01/05/25',
-    fechaFin: '05/05/25',
-    estado: 'En revisión',
-  },
-  {
-    id: 3,
-    fechaInicio: '10/05/25',
-    fechaFin: '15/05/25',
-    estado: 'Denegado',
-  },
-])
-
-// Estado del snackbar
-const snackbar = reactive({
-  show: false,
-  message: '',
-  color: 'success',
+onMounted(async () => {
+  await loadPermisosPorUsuario()
 })
 
-// Función para obtener color del estado
 const getStatusColor = (estado) => {
   switch (estado) {
     case 'Aprobado':
@@ -241,7 +204,18 @@ const getStatusColor = (estado) => {
   }
 }
 
-// Función para enviar solicitud
+const deleteReserva = (id) => {
+  if (confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
+    const index = permisos.value.findIndex((r) => r.id === id)
+    if (index > -1) {
+      permisos.value.splice(index, 1)
+      snackbar.message = 'Reserva eliminada'
+      snackbar.color = 'info'
+      snackbar.show = true
+    }
+  }
+}
+
 async function submitRequest() {
   if (!form.desde || !form.hasta || !form.motivo) {
     snackbar.message = 'Por favor completa todos los campos'
@@ -249,23 +223,11 @@ async function submitRequest() {
     snackbar.show = true
     return
   }
-
-  // Agregar nueva reserva
-  const newReserva = {
-    id_usuario: user.value.id,
-    fecha_salida: dateFormatDB(form.desde),
-    fecha_regreso: dateFormatDB(form.hasta),
-    motivo: form.motivo,
-  }
-
   await PermisosService.crearPermiso(newReserva)
-  reservas.value.unshift(newReserva)
-
-  // Limpiar formulario
+  permisos.value.unshift(newReserva)
   form.desde = ''
   form.hasta = ''
   form.motivo = ''
-
   snackbar.message = 'Solicitud enviada exitosamente'
   snackbar.color = 'success'
   snackbar.show = true
@@ -274,44 +236,15 @@ async function submitRequest() {
 async function loadPermisosPorUsuario() {
   const items = await PermisosService.obtenerPermisosPorUsuario(user.value.id)
   permisos.value = items.map((a) => ({
-      estado: a.estado,
-      fecha_regreso: a.fecha_regreso,
-      fecha_salida: a.fecha_salida,
-      id: a.id,
-      id_usuario: a.id_usuario,
-      motivo: a.descripcion || ''
-    }))
+    estado: a.estado,
+    fecha_regreso: a.fecha_regreso,
+    fecha_salida: a.fecha_salida,
+    id: a.id,
+    id_usuario: a.id_usuario,
+    motivo: a.descripcion || '',
+  }))
 }
-
-const dateFormatDB = (fecha) => {
-  const [dia, mes, anio] = fecha.split('/')
-  return `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`
-}
-
-const formatDate = (fecha) => {
-  if (!fecha) return ''
-  const partes = fecha.split('-')
-  return `${partes[2]}/${partes[1]}/${partes[0]}`
-}
-
-// Función para eliminar reserva
-const deleteReserva = (id) => {
-  if (confirm('¿Estás seguro de que quieres eliminar esta reserva?')) {
-    const index = reservas.value.findIndex((r) => r.id === id)
-    if (index > -1) {
-      reservas.value.splice(index, 1)
-      snackbar.message = 'Reserva eliminada'
-      snackbar.color = 'info'
-      snackbar.show = true
-    }
-  }
-}
-
-onMounted(async () => {
-  await loadPermisosPorUsuario()
-})
 </script>
-
 <style scoped>
 .custom-tab {
   text-transform: none;

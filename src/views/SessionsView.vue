@@ -62,8 +62,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, h } from 'vue'
+// @ts-ignore
+import { dateFormatV2 } from '@/util/functions'
+import { defineComponent, ref, h, onMounted } from 'vue'
 import { NButton, NModal, NInput, NSelect, NDataTable } from 'naive-ui'
+import CitasService from '@/services/CitasService'
+import LoginService from '@/services/LoginService'
+import type { Cita } from '@/models/Cita'
 
 export default defineComponent({
   components: {
@@ -74,39 +79,50 @@ export default defineComponent({
     NDataTable,
   },
   setup() {
+    const data = ref<Cita[]>([])
     const showModal = ref(false)
     const selectedSlot = ref<any>(null)
-
-    const form = ref({
-      motivo: '',
-      descripcion: '',
-      area: '',
-    })
+    const user = ref(LoginService.getCurrentUser())
+    const form = ref({ motivo: '', descripcion: '', area: ''})
 
     const submitCita = () => {
       console.log('Formulario enviado:', form.value, selectedSlot.value)
       showModal.value = false
     }
 
-    const data = [
-      { key: 1, slot: 1, day: 'Lunes 11', hour: '09:00am - 10:00am', status: 'Disponible' },
-      { key: 2, slot: 2, day: 'Lunes 12', hour: '10:00am - 11:00am', status: 'No Disponible' },
-      { key: 3, slot: 3, day: 'Lunes 13', hour: '11:00am - 12:00pm', status: 'Disponible' },
-      { key: 4, slot: 4, day: 'Lunes 10', hour: '12:00pm - 01:00pm', status: 'Disponible' },
-      { key: 5, slot: 5, day: 'Lunes 10', hour: '02:00pm - 03:00pm', status: 'No Disponible' },
-      { key: 6, slot: 6, day: 'Lunes 10', hour: '03:00pm - 04:00pm', status: 'Disponible' },
-      { key: 7, slot: 7, day: 'Lunes 10', hour: '04:00pm - 05:00pm', status: 'No Disponible' },
-    ]
+    onMounted(async () => {
+      loadCitasSolicitadasPorUsuario()
+    })
+
+    async function loadCitasSolicitadasPorUsuario() {
+      try {
+        const items = await CitasService.obtenerCitasSolicitadasPorUsuario(user.value.id)
+        data.value = items.map((a, i) => ({
+        index: i + 1,
+        area: a.area,
+        descripcion: a.descripcion,
+        estado: a.estado ?? '',
+        fecha: dateFormatV2(a.fecha),
+        horario: a.horario,
+        id: a.id,
+        motivo: a.motivo
+      }))
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
     const columns = [
-      { title: 'Horario', key: 'slot' },
-      { title: 'Día', key: 'day' },
-      { title: 'Hora', key: 'hour' },
+      { title: 'Horario', key: 'index' },
+      { title: 'Fecha', key: 'fecha' },
+      { title: 'Horario', key: 'horario' },
+      { title: 'Motivo', key: 'motivo' },
+      { title: 'Area', key: 'area' },
       {
         title: 'Estado',
-        key: 'status',
+        key: 'estado',
         render(row: any) {
-          if (row.status === 'Disponible') {
+          if (row.estado === 'Aprobado') {
             return h(
               NButton,
               {
@@ -117,7 +133,7 @@ export default defineComponent({
                   showModal.value = true
                 },
               },
-              { default: () => 'Disponible' },
+              { default: () => 'Aprobado' },
             )
           } else {
             return h(
@@ -127,7 +143,7 @@ export default defineComponent({
                 class: 'btn-no-disponible',
                 disabled: true,
               },
-              { default: () => 'No Disponible' },
+              { default: () => 'Solicitado' },
             )
           }
         },

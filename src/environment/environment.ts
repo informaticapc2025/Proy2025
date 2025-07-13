@@ -34,7 +34,10 @@ export const environment = {
       todasLasAreaComun: '/api/permisos/area-comun/admin',
     },
     citas: {
-      obtenerSolicitadasPorUsuario: '/citas/alumno'
+      obtenerSolicitadasPorUsuario: '/citas/alumno',
+      obtenerPendientes: 'citas/pendientes',
+      obtenerCulminadas: 'citas/culminadas',
+      consultar: 'citas'
     }
   },
 }

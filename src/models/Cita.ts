@@ -1,9 +1,19 @@
-export interface Cita {
+export interface CitaAlumno {
   area: string
-  descripcion: string
   estado: string
   fecha: string
   horario: string
   id: number
   motivo: string
+  descripcion: string
+}
+
+export interface CitaAdmin {
+  area: string
+  estado: string
+  fecha: string
+  horario: string
+  id: number
+  motivo: string
+  nombre: string
 }

@@ -74,7 +74,7 @@
           </v-card>
         </div>
 
-        <div v-show="mode" class="d-flex justify-center">
+        <div v-if="!mode" class="d-flex justify-center">
           <v-btn
             type="submit"
             color="#e91e63"

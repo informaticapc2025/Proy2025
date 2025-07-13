@@ -8,21 +8,16 @@
         <div>02:00pm - 05:00pm</div>
       </div>
     </div>
-
     <n-data-table ref="dataTableInst" :columns="columns" :data="data" :pagination="pagination" />
-
-    <!-- Modal para agendar cita -->
     <n-modal v-model:show="showModal" preset="dialog" class="modal-cita">
       <template #header>
         <h2 style="color: #a1003c; text-align: center">Agendar Cita</h2>
       </template>
-
       <div class="form-cita">
         <div>
           <label>Motivo:</label>
           <n-input placeholder="Motivo de la cita" v-model:value="form.motivo" />
         </div>
-
         <div>
           <label>Descripción:</label>
           <n-input
@@ -31,7 +26,6 @@
             v-model:value="form.descripcion"
           />
         </div>
-
         <div>
           <label>Área disponible:</label>
           <n-select
@@ -42,7 +36,6 @@
             ]"
           />
         </div>
-
         <div class="horario-seleccionado">
           <label>Horario elegido:</label>
           <div class="slot-box">
@@ -50,7 +43,6 @@
             <span>{{ selectedSlot?.hour }}</span>
           </div>
         </div>
-
         <div style="text-align: center; margin-top: 16px">
           <n-button type="primary" style="background-color: #a1003c" @click="submitCita"
             >Enviar</n-button
@@ -68,7 +60,7 @@ import { defineComponent, ref, h, onMounted } from 'vue'
 import { NButton, NModal, NInput, NSelect, NDataTable } from 'naive-ui'
 import CitasService from '@/services/CitasService'
 import LoginService from '@/services/LoginService'
-import type { Cita } from '@/models/Cita'
+import type { CitaAlumno } from '@/models/Cita'
 
 export default defineComponent({
   components: {
@@ -79,20 +71,57 @@ export default defineComponent({
     NDataTable,
   },
   setup() {
-    const data = ref<Cita[]>([])
+    const data = ref<CitaAlumno[]>([])
     const showModal = ref(false)
     const selectedSlot = ref<any>(null)
     const user = ref(LoginService.getCurrentUser())
     const form = ref({ motivo: '', descripcion: '', area: ''})
+    const columns = [
+      { title: 'Horario', key: 'index' },
+      { title: 'Fecha', key: 'fecha' },
+      { title: 'Horario', key: 'horario' },
+      { title: 'Motivo', key: 'motivo' },
+      { title: 'Area', key: 'area' },
+      {
+        title: 'Estado',
+        key: 'estado',
+        render(row: any) {
+          if (row.estado === 'Solicitado') {
+            return h(
+              NButton,
+              {
+                size: 'small',
+                class: 'btn-disponible',
+                onClick: () => {
+                  selectedSlot.value = row
+                  showModal.value = true
+                },
+              },
+              { default: () => 'Solicitado' },
+            )
+          } else {
+            return h(
+              NButton,
+              {
+                size: 'small',
+                class: 'btn-no-disponible',
+                disabled: true,
+              },
+              { default: () => 'Aprobado' },
+            )
+          }
+        },
+      },
+    ]
+
+    onMounted(async () => {
+      loadCitasSolicitadasPorUsuario()
+    })
 
     const submitCita = () => {
       console.log('Formulario enviado:', form.value, selectedSlot.value)
       showModal.value = false
     }
-
-    onMounted(async () => {
-      loadCitasSolicitadasPorUsuario()
-    })
 
     async function loadCitasSolicitadasPorUsuario() {
       try {
@@ -111,44 +140,6 @@ export default defineComponent({
         console.log(error)
       }
     }
-
-    const columns = [
-      { title: 'Horario', key: 'index' },
-      { title: 'Fecha', key: 'fecha' },
-      { title: 'Horario', key: 'horario' },
-      { title: 'Motivo', key: 'motivo' },
-      { title: 'Area', key: 'area' },
-      {
-        title: 'Estado',
-        key: 'estado',
-        render(row: any) {
-          if (row.estado === 'Aprobado') {
-            return h(
-              NButton,
-              {
-                size: 'small',
-                class: 'btn-disponible',
-                onClick: () => {
-                  selectedSlot.value = row
-                  showModal.value = true
-                },
-              },
-              { default: () => 'Aprobado' },
-            )
-          } else {
-            return h(
-              NButton,
-              {
-                size: 'small',
-                class: 'btn-no-disponible',
-                disabled: true,
-              },
-              { default: () => 'Solicitado' },
-            )
-          }
-        },
-      },
-    ]
 
     return {
       data,

@@ -13,3 +13,4 @@ class Actividad(db.Model):
     fecha_solicitud = db.Column(db.DateTime, default=datetime.utcnow)
     estado = db.Column(db.String(50), default='Pendiente')
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
+    stock = db.Column(db.Integer, nullable=False, default=0)

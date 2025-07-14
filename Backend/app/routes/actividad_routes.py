@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.controllers.actividad_controller import crear_actividad_con_archivo, listar_por_usuario, listar_todas, cambiar_estado, listar_aprobadas
+from app.controllers.actividad_controller import crear_actividad_con_archivo, listar_por_usuario, listar_todas, cambiar_estado, listar_aprobadas, inscribir_alumno, cancelar_inscripcion
 
 actividad_bp = Blueprint('actividad', __name__)
 
@@ -26,7 +26,8 @@ def ver_por_usuario(id_usuario):
         'fecha_actividad': a.fecha_actividad.strftime('%d/%m/%Y'),
         'fecha_solicitud': a.fecha_solicitud.strftime('%d/%m/%Y'),
         'estado': a.estado,
-        'archivo': a.archivo
+        'archivo': a.archivo,
+        'stock': a.stock,  
     } for a in actividades])
 
 @actividad_bp.route('/actividades/admin', methods=['GET'])
@@ -41,7 +42,8 @@ def ver_todas():
         'fecha_actividad': a.fecha_actividad.strftime('%d/%m/%Y'),
         'fecha_solicitud': a.fecha_solicitud.strftime('%d/%m/%Y'),
         'estado': a.estado,
-        'archivo': a.archivo
+        'archivo': a.archivo,
+        'stock': a.stock,
     } for a in actividades])
 
 @actividad_bp.route('/actividades/<int:id_actividad>/estado', methods=['PUT'])
@@ -54,11 +56,27 @@ def actualizar_estado(id_actividad):
 
 @actividad_bp.route('/actividades/aprobadas', methods=['GET'])
 def ver_aprobadas():
-    actividades = listar_aprobadas()
-    return jsonify([{
-        'id': a.id_actividad,
-        'titulo': a.titulo,
-        'descripcion': a.descripcion,
-        'tipo': a.tipo,
-        'fecha_actividad': a.fecha_actividad.strftime('%d/%m/%Y'),
-    } for a in actividades])
+    acts = listar_aprobadas()
+    resp = []
+    for a in acts:
+        cupos = a.stock - len(a.inscripciones)
+        resp.append({
+            'id': a.id_actividad,
+            'titulo': a.titulo,
+            'tipo': a.tipo,
+            'stock': a.stock,
+            'fecha_actividad': a.fecha_actividad.strftime('%d/%m/%Y'),
+            'cupos_restantes': cupos
+        })
+    return jsonify(resp)
+
+
+@actividad_bp.route('/actividades/<int:id_actividad>/inscribirse', methods=['POST'])
+def inscribirse(id_actividad):
+    id_usuario = request.json.get('id_usuario')
+    return inscribir_alumno(id_actividad, id_usuario)
+
+@actividad_bp.route('/actividades/<int:id_actividad>/cancelar', methods=['DELETE'])
+def desistir(id_actividad):
+    id_usuario = request.json.get('id_usuario')
+    return cancelar_inscripcion(id_actividad, id_usuario)

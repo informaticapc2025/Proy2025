@@ -25,7 +25,7 @@ def create_app():
     migrate.init_app(app, db)
 
     # Importación de modelos (para que SQLAlchemy los registre)
-    from app.models import usuarios, anuncio, reconocimiento, queja, actividad, permisos, cita, asistencia
+    from app.models import usuarios, anuncio, reconocimiento, queja, actividad, permisos, cita, asistencia, inscripcion
 
     # Registro de Blueprints
     from app.routes.usuarios import usuarios_bp

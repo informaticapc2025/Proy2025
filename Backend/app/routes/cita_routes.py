@@ -9,7 +9,10 @@ from app.controllers.cita_controller import (
     actualizar_estado_cita,
     obtener_cita,
     actualizar_citas_ausentes,
-    reprogramar_cita
+    reprogramar_cita,
+    filtrar_citas, 
+    ESTADOS_PENDIENTES, 
+    ESTADOS_CULMINADAS
 )
 
 cita_bp = Blueprint('cita', __name__)
@@ -32,31 +35,42 @@ def ver_citas_alumno(id_alumno):
         'estado': c.estado
     } for c in citas])
 
+# ---------- helpers internos -----------
+def _formato_admin(c):
+    return {
+        'id'        : c.id_cita,
+        'id_alumno' : c.id_alumno,
+        'nombre'    : c.alumno.nombre,
+        'motivo'    : c.motivo,
+        'area'      : c.area,
+        'fecha'     : c.fecha.strftime('%Y-%m-%d'),
+        'horario'   : c.horario,
+        'estado'    : c.estado
+    }
+
+def _extraer_filtros():
+    """Lee los query‑params y devuelve solo los presentes"""
+    f = {
+        'id_alumno': request.args.get('id_alumno', type=int),
+        'nombre'   : request.args.get('nombre'),
+        'area'     : request.args.get('area'),
+        'fecha'    : request.args.get('fecha',
+                       type=lambda d: datetime.strptime(d, '%Y-%m-%d').date() if d else None)
+    }
+    return {k: v for k, v in f.items() if v is not None}
+
+# ---------- rutas con filtros ----------
 @cita_bp.route('/citas/pendientes', methods=['GET'])
 def ver_pendientes():
-    citas = obtener_citas_pendientes()
-    return jsonify([{
-        'id': c.id_cita,
-        'nombre': c.alumno.nombre,
-        'motivo': c.motivo,
-        'area': c.area,
-        'fecha': c.fecha.strftime('%Y-%m-%d'),
-        'horario': c.horario,
-        'estado': c.estado
-    } for c in citas])
+    citas = filtrar_citas(ESTADOS_PENDIENTES, **_extraer_filtros())
+    return jsonify([_formato_admin(c) for c in citas])
+
 
 @cita_bp.route('/citas/culminadas', methods=['GET'])
 def ver_culminadas():
-    citas = obtener_citas_culminadas()
-    return jsonify([{
-        'id': c.id_cita,
-        'nombre': c.alumno.nombre,
-        'motivo': c.motivo,
-        'area': c.area,
-        'fecha': c.fecha.strftime('%Y-%m-%d'),
-        'horario': c.horario,
-        'estado': c.estado
-    } for c in citas])
+    citas = filtrar_citas(ESTADOS_CULMINADAS, **_extraer_filtros())
+    return jsonify([_formato_admin(c) for c in citas])
+
 
 @cita_bp.route('/citas/<int:id_cita>/estado', methods=['PUT'])
 def cambiar_estado(id_cita):
@@ -92,3 +106,5 @@ def reprogramar(id_cita):
         return reprogramar_cita(id_cita, nueva_fecha, nuevo_horario)
     except Exception as e:
         return jsonify({'error': 'Formato de fecha inválido o datos faltantes'}), 400
+    
+

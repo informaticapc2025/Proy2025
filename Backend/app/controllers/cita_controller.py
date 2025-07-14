@@ -1,7 +1,10 @@
 from flask import jsonify
+from app.models.usuarios import Usuario
 from app import db
 from app.models.cita import Cita
 from datetime import datetime
+from sqlalchemy import and_
+
 
 def crear_cita(data):
     fecha = datetime.strptime(data['fecha'], '%Y-%m-%d').date()
@@ -94,3 +97,34 @@ def reprogramar_cita(id_cita, nueva_fecha, nuevo_horario):
     db.session.commit()
 
     return jsonify({'mensaje': 'Cita reprogramada correctamente'}), 200
+
+ESTADOS_PENDIENTES  = ['Solicitado', 'Aprobado', 'Reprogramado']
+ESTADOS_CULMINADAS  = ['Atendido', 'Ausente']
+
+def filtrar_citas(estado_lista, **filtros):
+    """
+    estado_lista →  lista de estados que se desean (pendientes o culminadas)
+    filtros →       id_alumno, nombre, area, fecha  (cualquiera opcional)
+    """
+    consulta = Cita.query.join(Cita.alumno).filter(Cita.estado.in_(estado_lista))
+
+    if filtros.get('id_alumno'):
+        consulta = consulta.filter(Cita.id_alumno == filtros['id_alumno'])
+
+    if filtros.get('nombre'):
+        patron = f"%{filtros['nombre']}%"
+        consulta = consulta.filter(Usuario.nombre.ilike(patron))
+
+    if filtros.get('area'):
+        consulta = consulta.filter(Cita.area.ilike(filtros['area']))
+
+    if filtros.get('fecha'):
+        consulta = consulta.filter(Cita.fecha == filtros['fecha'])
+
+    # orden coherente
+    if estado_lista == ESTADOS_PENDIENTES:
+        consulta = consulta.order_by(Cita.fecha.asc(), Cita.horario.asc())
+    else:
+        consulta = consulta.order_by(Cita.fecha.desc(), Cita.horario.asc())
+
+    return consulta.all()

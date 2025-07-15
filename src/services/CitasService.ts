@@ -40,6 +40,12 @@ export class CitasService {
       .get<CitaAdmin[]>(`${this.urlConsultar}/${citaId}`)
       .then((res: { data: CitaAdmin[] }) => res.data)
   }
+
+  async obtenerCitaPorId(id: number): Promise<CitaAdmin> {
+    return axios
+      .get<CitaAdmin>(`${this.urlConsultar}/${id}`)
+      .then(res => res.data);
+  }
 }
 
 export default new CitasService()

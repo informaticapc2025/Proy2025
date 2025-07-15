@@ -73,8 +73,6 @@
           <n-button @click="handleBuscar" type="primary" style="min-width: 100px">Buscar</n-button>
           <n-button @click="clearFilters" secondary style="min-width: 100px">Limpiar</n-button>
         </div>
-
-        <!-- Tabs de citas -->
         <n-tabs v-model:value="tabActivo" type="line">
           <n-tab-pane name="pendientes" tab="Pendientes">
             <n-data-table
@@ -84,7 +82,6 @@
               :pagination="pagination"
             />
           </n-tab-pane>
-
           <n-tab-pane name="culminadas" tab="Culminadas">
             <n-data-table
               ref="tablaCulminadas"
@@ -95,13 +92,24 @@
           </n-tab-pane>
         </n-tabs>
       </div>
+      <n-modal v-model:show="modalVisible" preset="dialog" title="Detalle de Cita">
+        <template #default>
+          <div style="background-color: white; padding: 16px; border-radius: 6px">
+            <p><strong>Fecha:</strong> {{ dateFormatV2(citaSeleccionada?.fecha) }}</p>
+            <p><strong>Horario:</strong> {{ citaSeleccionada?.horario }}</p>
+            <p><strong>Área:</strong> {{ citaSeleccionada?.area }}</p>
+            <p><strong>Nombre:</strong> {{ citaSeleccionada?.nombre }}</p>
+            <p><strong>Estado:</strong> {{ citaSeleccionada?.estado }}</p>
+          </div>
+        </template>
+      </n-modal>
     </template>
   </div>
 </template>
 <script lang="ts">
 // @ts-ignore
 import { dateFormatV2 } from '@/util/functions'
-import { defineComponent, ref, h, onMounted, reactive } from 'vue'
+import { defineComponent, ref, h, onMounted, reactive, resolveComponent } from 'vue'
 import { NButton, NModal, NInput, NSelect, NDataTable } from 'naive-ui'
 import CitasService from '@/services/CitasService'
 import LoginService from '@/services/LoginService'
@@ -124,6 +132,8 @@ export default defineComponent({
     const selectedSlot = ref<any>(null)
     const isAdmin = LoginService.isAdmin()
     const user = ref(LoginService.getCurrentUser())
+    const modalVisible = ref(false)
+    const citaSeleccionada = ref<any>(null)
     const form = ref({ motivo: '', descripcion: '', area: '' })
     const filtros = reactive({
       area: '',
@@ -132,12 +142,26 @@ export default defineComponent({
       fecha: null,
     })
     const columnsAdmin = [
-      { title: 'Número', key: 'index' },
       { title: 'Fecha', key: 'fecha' },
-      { title: 'Horario', key: 'horario' },
       { title: 'Area', key: 'area' },
       { title: 'Nombre', key: 'nombre' },
       { title: 'Estado', key: 'estado' },
+      {
+        title: 'Acción',
+        key: 'accion',
+        render(row: any) {
+          const NButton = resolveComponent('n-button')
+          return h(
+            NButton,
+            {
+              type: 'secondary',
+              size: 'small',
+              onClick: () => handleConsultar(row)
+            },
+            { default: () => 'Consultar' }
+          )
+        }
+      }
     ]
     const columnsAlumno = [
       { title: 'Número', key: 'index' },
@@ -181,6 +205,12 @@ export default defineComponent({
       chooseCitas()
     })
 
+    async function handleConsultar(row: any) {
+      const data = await loadCita(row)
+      citaSeleccionada.value = data
+      modalVisible.value = true
+    }
+
     const submitCita = () => {
       console.log('Formulario enviado:', form.value, selectedSlot.value)
       showModal.value = false
@@ -202,6 +232,11 @@ export default defineComponent({
       } catch (error) {
         console.log(error)
       }
+    }
+
+    async function loadCita(row: any) {
+      const items = await CitasService.obtenerCitaPorId(row.id)
+      return items
     }
 
     function getFilters() {
@@ -294,10 +329,13 @@ export default defineComponent({
       loadCitasPendientes,
       loadCitasCulminadas,
       handleBuscar,
+      dateFormatV2,
       pagination: ref({ pageSize: 7 }),
       dataTableInst: ref(null),
       isAdmin,
-      tabActivo
+      tabActivo,
+      modalVisible,
+      citaSeleccionada,
     }
   },
 })

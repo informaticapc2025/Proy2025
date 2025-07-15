@@ -21,15 +21,17 @@ export class CitasService {
       .then((res: { data: CitaAlumno[] }) => res.data)
   }
 
-  async obtenerCitasPendientes(): Promise<CitaAdmin[]> {
+  async obtenerCitasPendientes(params: Record<string, any>): Promise<CitaAdmin[]> {
+    const query = new URLSearchParams(params).toString()
     return axios
-      .get<CitaAdmin[]>(this.urlObtenerPendientes)
+      .get<CitaAdmin[]>(`${this.urlObtenerPendientes}?${query}`)
       .then((res: { data: CitaAdmin[] }) => res.data)
   }
 
-  async obtenerCitasCulminadas(): Promise<CitaAdmin[]> {
+  async obtenerCitasCulminadas(params: Record<string, any>): Promise<CitaAdmin[]> {
+    const query = new URLSearchParams(params).toString()
     return axios
-      .get<CitaAdmin[]>(this.urlObtenerCulminadas)
+      .get<CitaAdmin[]>(`${this.urlObtenerCulminadas}?${query}`)
       .then((res: { data: CitaAdmin[] }) => res.data)
   }
 

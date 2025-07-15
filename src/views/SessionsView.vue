@@ -8,59 +8,104 @@
         <div>02:00pm - 05:00pm</div>
       </div>
     </div>
-    <n-data-table ref="dataTableInst" :columns="columns" :data="data" :pagination="pagination" />
-    <n-modal v-model:show="showModal" preset="dialog" class="modal-cita">
-      <template #header>
-        <h2 style="color: #a1003c; text-align: center">Agendar Cita</h2>
-      </template>
-      <div class="form-cita">
-        <div>
-          <label>Motivo:</label>
-          <n-input placeholder="Motivo de la cita" v-model:value="form.motivo" />
-        </div>
-        <div>
-          <label>Descripción:</label>
-          <n-input
-            type="textarea"
-            placeholder="Describe el motivo..."
-            v-model:value="form.descripcion"
-          />
-        </div>
-        <div>
-          <label>Área disponible:</label>
-          <n-select
-            v-model:value="form.area"
-            :options="[
-              { label: 'Psicología', value: 'psicologia' },
-              { label: 'Bienestar', value: 'bienestar' },
-            ]"
-          />
-        </div>
-        <div class="horario-seleccionado">
-          <label>Horario elegido:</label>
-          <div class="slot-box">
-            <strong>{{ selectedSlot?.day }}</strong>
-            <span>{{ selectedSlot?.hour }}</span>
+    <template v-if="!isAdmin">
+      <n-data-table
+        ref="dataTableInst"
+        :columns="columnsAlumno"
+        :data="dataAlumno"
+        :pagination="pagination"
+      />
+      <n-modal v-model:show="showModal" preset="dialog" class="modal-cita">
+        <template #header>
+          <h2 style="color: #a1003c; text-align: center">Agendar Cita</h2>
+        </template>
+        <div class="form-cita">
+          <div>
+            <label>Motivo:</label>
+            <n-input placeholder="Motivo de la cita" v-model:value="form.motivo" />
+          </div>
+          <div>
+            <label>Descripción:</label>
+            <n-input
+              type="textarea"
+              placeholder="Describe el motivo..."
+              v-model:value="form.descripcion"
+            />
+          </div>
+          <div>
+            <label>Área disponible:</label>
+            <n-select
+              v-model:value="form.area"
+              :options="[
+                { label: 'Psicología', value: 'psicologia' },
+                { label: 'Bienestar', value: 'bienestar' },
+              ]"
+            />
+          </div>
+          <div class="horario-seleccionado">
+            <label>Horario elegido:</label>
+            <div class="slot-box">
+              <strong>{{ selectedSlot?.day }}</strong>
+              <span>{{ selectedSlot?.hour }}</span>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 16px">
+            <n-button type="primary" style="background-color: #a1003c" @click="submitCita"
+              >Enviar</n-button
+            >
           </div>
         </div>
-        <div style="text-align: center; margin-top: 16px">
-          <n-button type="primary" style="background-color: #a1003c" @click="submitCita"
-            >Enviar</n-button
-          >
+      </n-modal>
+    </template>
+    <template v-else>
+      <div>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px">
+          <n-input v-model:value="filtros.area" placeholder="Área" style="flex: 1; min-width: 150px" />
+          <n-input v-model:value="filtros.nombre" placeholder="Nombre" style="flex: 1; min-width: 150px" />
+          <n-input v-model:value="filtros.id_numero" placeholder="ID número" style="flex: 1; min-width: 150px" />
+          <n-date-picker
+            v-model:value="filtros.fecha"
+            type="date"
+            placeholder="Fecha"
+            format="dd/MM/yyyy"
+            value-format="yyyy-MM-dd"
+          />
+          <n-button @click="handleBuscar" type="primary" style="min-width: 100px">Buscar</n-button>
+          <n-button @click="clearFilters" secondary style="min-width: 100px">Limpiar</n-button>
         </div>
+
+        <!-- Tabs de citas -->
+        <n-tabs v-model:value="tabActivo" type="line">
+          <n-tab-pane name="pendientes" tab="Pendientes">
+            <n-data-table
+              ref="tablaPendientes"
+              :columns="columnsAdmin"
+              :data="dataPendiente"
+              :pagination="pagination"
+            />
+          </n-tab-pane>
+
+          <n-tab-pane name="culminadas" tab="Culminadas">
+            <n-data-table
+              ref="tablaCulminadas"
+              :columns="columnsAdmin"
+              :data="dataCulminada"
+              :pagination="pagination"
+            />
+          </n-tab-pane>
+        </n-tabs>
       </div>
-    </n-modal>
+    </template>
   </div>
 </template>
-
 <script lang="ts">
 // @ts-ignore
 import { dateFormatV2 } from '@/util/functions'
-import { defineComponent, ref, h, onMounted } from 'vue'
+import { defineComponent, ref, h, onMounted, reactive } from 'vue'
 import { NButton, NModal, NInput, NSelect, NDataTable } from 'naive-ui'
 import CitasService from '@/services/CitasService'
 import LoginService from '@/services/LoginService'
-import type { CitaAlumno } from '@/models/Cita'
+import type { CitaAdmin, CitaAlumno } from '@/models/Cita'
 
 export default defineComponent({
   components: {
@@ -71,13 +116,31 @@ export default defineComponent({
     NDataTable,
   },
   setup() {
-    const data = ref<CitaAlumno[]>([])
+    const tabActivo = ref('pendientes')
+    const dataAlumno = ref<CitaAlumno[]>([])
+    const dataPendiente = ref<CitaAdmin[]>([])
+    const dataCulminada = ref<CitaAdmin[]>([])
     const showModal = ref(false)
     const selectedSlot = ref<any>(null)
+    const isAdmin = LoginService.isAdmin()
     const user = ref(LoginService.getCurrentUser())
-    const form = ref({ motivo: '', descripcion: '', area: ''})
-    const columns = [
-      { title: 'Horario', key: 'index' },
+    const form = ref({ motivo: '', descripcion: '', area: '' })
+    const filtros = reactive({
+      area: '',
+      nombre: '',
+      id_numero: '',
+      fecha: null,
+    })
+    const columnsAdmin = [
+      { title: 'Número', key: 'index' },
+      { title: 'Fecha', key: 'fecha' },
+      { title: 'Horario', key: 'horario' },
+      { title: 'Area', key: 'area' },
+      { title: 'Nombre', key: 'nombre' },
+      { title: 'Estado', key: 'estado' },
+    ]
+    const columnsAlumno = [
+      { title: 'Número', key: 'index' },
       { title: 'Fecha', key: 'fecha' },
       { title: 'Horario', key: 'horario' },
       { title: 'Motivo', key: 'motivo' },
@@ -115,7 +178,7 @@ export default defineComponent({
     ]
 
     onMounted(async () => {
-      loadCitasSolicitadasPorUsuario()
+      chooseCitas()
     })
 
     const submitCita = () => {
@@ -126,30 +189,115 @@ export default defineComponent({
     async function loadCitasSolicitadasPorUsuario() {
       try {
         const items = await CitasService.obtenerCitasSolicitadasPorUsuario(user.value.id)
-        data.value = items.map((a, i) => ({
-        index: i + 1,
-        area: a.area,
-        descripcion: a.descripcion,
-        estado: a.estado ?? '',
-        fecha: dateFormatV2(a.fecha),
-        horario: a.horario,
-        id: a.id,
-        motivo: a.motivo
-      }))
+        dataAlumno.value = items.map((a, i) => ({
+          index: i + 1,
+          area: a.area,
+          descripcion: a.descripcion,
+          estado: a.estado ?? '',
+          fecha: dateFormatV2(a.fecha),
+          horario: a.horario,
+          id: a.id,
+          motivo: a.motivo,
+        }))
       } catch (error) {
         console.log(error)
       }
     }
 
+    function getFilters() {
+      const params: Record<string, any> = {}
+      if (filtros.area) params.area = filtros.area
+      if (filtros.nombre) params.nombre = filtros.nombre
+      if (filtros.id_numero) params.id_numero = Number(filtros.id_numero)
+      if (filtros.fecha) {
+        const fechaObj = new Date(filtros.fecha)
+        params.fecha = fechaObj.toISOString().split('T')[0]
+      }
+      return params
+    }
+
+    function clearFilters() {
+      filtros.area = ''
+      filtros.nombre = ''
+      filtros.id_numero = ''
+      filtros.fecha = null
+      handleBuscar()
+    }
+
+    async function loadCitasPendientes() {
+      try {
+        const items = await CitasService.obtenerCitasPendientes(getFilters())
+        dataPendiente.value = items.map((a, i) => ({
+          index: i + 1,
+          area: a.area,
+          estado: a.estado,
+          fecha: dateFormatV2(a.fecha),
+          horario: a.horario,
+          id: a.id,
+          id_alumno: a.id_alumno,
+          motivo: a.motivo,
+          nombre: a.nombre,
+        }))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    async function loadCitasCulminadas() {
+      try {
+        const items = await CitasService.obtenerCitasCulminadas(getFilters())
+        dataCulminada.value = items.map((a, i) => ({
+          index: i + 1,
+          area: a.area,
+          estado: a.estado,
+          fecha: dateFormatV2(a.fecha),
+          horario: a.horario,
+          id: a.id,
+          id_alumno: a.id_alumno,
+          motivo: a.motivo,
+          nombre: a.nombre,
+        }))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    function chooseCitas() {
+      if (isAdmin) {
+        loadCitasPendientes()
+        loadCitasCulminadas()
+      } else {
+        loadCitasSolicitadasPorUsuario()
+      }
+    }
+
+    function handleBuscar() {
+      if (tabActivo.value === 'pendientes') {
+        loadCitasPendientes()
+      } else {
+        loadCitasCulminadas()
+      }
+    }
+
     return {
-      data,
-      columns,
+      filtros,
+      dataAlumno,
+      columnsAlumno,
+      dataPendiente,
+      dataCulminada,
+      columnsAdmin,
       showModal,
       selectedSlot,
       form,
       submitCita,
+      clearFilters,
+      loadCitasPendientes,
+      loadCitasCulminadas,
+      handleBuscar,
       pagination: ref({ pageSize: 7 }),
       dataTableInst: ref(null),
+      isAdmin,
+      tabActivo
     }
   },
 })

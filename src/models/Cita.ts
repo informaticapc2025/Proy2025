@@ -14,6 +14,7 @@ export interface CitaAdmin {
   fecha: string
   horario: string
   id: number
+  id_alumno: number
   motivo: string
   nombre: string
 }

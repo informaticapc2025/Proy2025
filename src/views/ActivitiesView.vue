@@ -7,7 +7,7 @@
     <v-tabs-window v-model="tab">
       <v-tabs-window-item :value="1">
         <div class="text-right">
-          <v-btn variant="outlined" class="mb-6" @click="openModalNuevo">Nueva Queja</v-btn>
+          <v-btn variant="outlined" class="mb-6" @click="openModalNuevo">Nueva Actividad</v-btn>
         </div>
         <v-container fluid>
           <div v-for="(actividad, index) in actividades" :key="index" class="actividad-card">
@@ -23,7 +23,7 @@
             </div>
             <div class="tipo">{{ actividad.tipo.toUpperCase() }}</div>
             <div class="accion">
-              <n-button type="warning" ghost>Acceder al formulario</n-button>
+              <n-button type="warning" ghost  @click="openModalNuevo('form')">Acceder al formulario</n-button>
             </div>
           </div>
         </v-container>
@@ -62,34 +62,19 @@
                 <template v-slot:item.acciones="{ item }">
                   <v-menu>
                     <template v-slot:activator="{ props }">
-                      <v-btn
-                        icon="mdi-dots-horizontal"
-                        variant="text"
-                        size="small"
+                      <button
                         v-bind="props"
-                        class="text-grey-darken-1"
-                      ></v-btn>
+                        style="background: none; border: none; cursor: pointer"
+                        title="Ver detalle"
+                         @click="openModalSolicitudes"
+                      >
+                        <i
+                          class="fa-solid fa-eye"
+                          style="color: #1976d2; font-size: 20px"
+                        ></i>
+                      </button>
                     </template>
-                    <v-list density="compact">
-                      <v-list-item @click="editItem(item)">
-                        <v-list-item-title>
-                          <v-icon size="small" class="me-2">mdi-pencil</v-icon>
-                          Editar
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item @click="viewItem(item)">
-                        <v-list-item-title>
-                          <v-icon size="small" class="me-2">mdi-eye</v-icon>
-                          Ver detalles
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item @click="deleteItem(item)" class="text-red">
-                        <v-list-item-title>
-                          <v-icon size="small" class="me-2">mdi-delete</v-icon>
-                          Eliminar
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
+                    
                   </v-menu>
                 </template>
               </v-data-table>
@@ -105,7 +90,8 @@
       </v-tabs-window-item>
     </v-tabs-window>
   </v-card>
-  <ModalActividades v-model="showModal" :item="selectedItem" />
+  <ModalActividades :type="modalType" v-model="showModal" :item="selectedItem" :user="user" :mode="isView" />
+   <ModalMisSolicitudes v-model="showModalSolicitudes" :item="selectedItem" :user="user" :mode="isView" />
 </template>
 <script setup>
 import { NButton } from 'naive-ui'
@@ -113,11 +99,14 @@ import { ref, reactive, onMounted } from 'vue'
 import LoginService from '@/services/LoginService'
 import ActividadesService from '@/services/ActividadesService'
 import ModalActividades from './modal/ModalActividades.vue'
+import ModalMisSolicitudes from './modal/ModalMisSolicitudes.vue'
 
 const tab = ref(1)
 const items = ref([])
 const actividades = ref([])
 const showModal = ref(false)
+const modalType = ref('actividad')
+const showModalSolicitudes = ref(false)
 const selectedItem = ref(null)
 const user = ref(LoginService.getCurrentUser())
 const snackbar = reactive({
@@ -190,7 +179,21 @@ const deleteItem = (item) => {
   }
 }
 
-function openModalNuevo() {
+function openModalNuevo( type = 'actividad') {
+  selectedItem.value = {
+    numero: '',
+    asunto: '',
+    motivo: '',
+    fecha: '',
+    estado: '',
+    descripcion: '',
+    attend : false
+  }
+  modalType.value = type
+  showModal.value = true
+}
+
+function openModalSolicitudes() {
   selectedItem.value = {
     numero: '',
     asunto: '',
@@ -199,7 +202,7 @@ function openModalNuevo() {
     estado: '',
     descripcion: '',
   }
-  showModal.value = true
+  showModalSolicitudes.value = true
 }
 
 function chooseSolicitudes() {

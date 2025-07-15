@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" max-width="500px" persistent>
     <v-card class="pa-4" style="border-radius: 16px">
       <v-card-title class="d-flex justify-space-between align-center pa-0 mb-4">
-        <h2 class="text-h5 font-weight-bold" style="color: #e91e63">{{ type === 'form' ? 'Formulario de actividad' : 'Realizar una Actividad' }}</h2>
+        <h2 class="text-h5 font-weight-bold" style="color: #e91e63">Detalles de solicitud:</h2>
         <button
           @click="dialog = false"
           style="background: none; border: none; cursor: pointer"
@@ -12,28 +12,30 @@
         </button>
       </v-card-title>
 
-      <v-form @submit.prevent="submitComplaint">
+      <v-form 
+         @submit.prevent="submitComplaint"
+      >
         <div class="mb-4">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Asunto </label>
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Título </label>
           <v-text-field
             v-model="form.asunto"
             variant="outlined"
             density="comfortable"
             hide-details
             class="custom-input"
+            disabled
           ></v-text-field>
         </div>
-
         <div class="mb-4">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Motivo </label>
-          <v-select
-            v-model="form.motivo"
-            :items="motivosOptions"
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Fecha </label>
+          <v-text-field
+            v-model="form.asunto"
             variant="outlined"
             density="comfortable"
             hide-details
             class="custom-input"
-          ></v-select>
+            disabled
+          ></v-text-field>
         </div>
 
         <div class="mb-4">
@@ -41,18 +43,20 @@
           <v-textarea
             v-model="form.descripcion"
             variant="outlined"
-            rows="4"
+            rows="3"
             hide-details
             class="custom-input"
+            disabled
           ></v-textarea>
         </div>
 
         <div class="mb-6">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Prueba </label>
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Archivo adjunto </label>
           <v-card
             class="upload-area d-flex flex-column align-center justify-center"
             style="min-height: 120px; border: 2px dashed #e0e0e0; background-color: #f5f5f5"
             @click="triggerFileInput"
+            disabled
           >
             <v-icon size="32" color="grey-lighten-1" class="mb-2"> mdi-cloud-upload </v-icon>
             <span class="text-body-2 text-grey-lighten-1">
@@ -67,14 +71,8 @@
             />
           </v-card>
         </div>
-        <div>
-            <n-checkbox
-              v-if="type === 'form'"
-              v-model:checked="item.participa"
-              label="Participaré en esta actividad"
-            />
-        </div>
-        <div class="d-flex justify-center">
+
+        <!-- <div class="d-flex justify-center">
           <v-btn
             type="submit"
             color="#e91e63"
@@ -84,8 +82,7 @@
           >
             Enviar
           </v-btn>
-        </div>
-       
+        </div> -->
       </v-form>
     </v-card>
   </v-dialog>
@@ -94,12 +91,10 @@
 <script setup>
 import { currentDate } from '@/util/functions.js'
 import { ref, reactive, watch, computed } from 'vue'
-import QuejasService from '@/services/QuejasService'
 
 const props = defineProps({
   modelValue: Boolean,
   item: Object,
-  type: String,
 })
 
 const emit = defineEmits(['update:modelValue'])

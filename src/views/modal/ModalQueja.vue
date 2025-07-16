@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" max-width="500px" persistent>
     <v-card class="pa-4" style="border-radius: 16px">
       <v-card-title class="d-flex justify-space-between align-center pa-0 mb-4">
-        <h2 class="text-h5 font-weight-bold" style="color: #e91e63">Formulario de Actividad</h2>
+        <h2 class="text-h5 font-weight-bold" style="color: #e91e63">{{ type === 'form' ? 'Visualizar queja' : 'Reportar una Queja' }}</h2>
         <button
           @click="dialog = false"
           style="background: none; border: none; cursor: pointer"
@@ -14,10 +14,9 @@
 
       <v-form @submit.prevent="submitComplaint">
         <div class="mb-4">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Tipo de Actividad </label>
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Asunto </label>
           <v-text-field
             v-model="form.asunto"
-            label="Asunto"
             variant="outlined"
             density="comfortable"
             hide-details
@@ -27,7 +26,7 @@
         </div>
 
         <div class="mb-4">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Titulo </label>
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Motivo </label>
           <v-select
             v-model="form.motivo"
             :items="motivosOptions"
@@ -43,7 +42,6 @@
           <label class="text-body-2 font-weight-medium mb-2 d-block"> Descripción </label>
           <v-textarea
             v-model="form.descripcion"
-            label="Describe tu queja aquí"
             variant="outlined"
             rows="4"
             hide-details
@@ -53,7 +51,7 @@
         </div>
 
         <div class="mb-6">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Adjuntar multimedia </label>
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Prueba multimedia </label>
           <v-card
             class="upload-area d-flex flex-column align-center justify-center"
             style="min-height: 120px; border: 2px dashed #e0e0e0; background-color: #f5f5f5"
@@ -105,6 +103,7 @@ const props = defineProps({
   item: Object,
   user: Object,
   mode: Boolean,
+  type: String,
 })
 
 const emit = defineEmits(['update:modelValue', 'agregarQueja'])

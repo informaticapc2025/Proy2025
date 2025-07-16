@@ -14,9 +14,19 @@
 
       <v-form @submit.prevent="submitComplaint">
         <div class="mb-4">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Asunto </label>
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Tipo </label>
           <v-text-field
-            v-model="form.asunto"
+            v-model="form.tipo"
+            variant="outlined"
+            density="comfortable"
+            hide-details
+            class="custom-input"
+          ></v-text-field>
+        </div>
+        <div class="mb-4">
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Título </label>
+          <v-text-field
+            v-model="form.titulo"
             variant="outlined"
             density="comfortable"
             hide-details
@@ -24,17 +34,6 @@
           ></v-text-field>
         </div>
 
-        <div class="mb-4">
-          <label class="text-body-2 font-weight-medium mb-2 d-block"> Motivo </label>
-          <v-select
-            v-model="form.motivo"
-            :items="motivosOptions"
-            variant="outlined"
-            density="comfortable"
-            hide-details
-            class="custom-input"
-          ></v-select>
-        </div>
 
         <div class="mb-4">
           <label class="text-body-2 font-weight-medium mb-2 d-block"> Descripción </label>
@@ -94,7 +93,7 @@
 <script setup>
 import { currentDate } from '@/util/functions.js'
 import { ref, reactive, watch, computed } from 'vue'
-import QuejasService from '@/services/QuejasService'
+import ActividadesService from '@/services/ActividadesService'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -112,30 +111,21 @@ const selectedFile = ref(null)
 
 const form = reactive({
   numero: '',
-  asunto: '',
-  motivo: '',
+  tipo: '',
+  titulo: '',
   fecha: '',
   estado: '',
   descripcion: '',
 })
 
-const motivosOptions = [
-  'Robo',
-  'Daños a la propiedad',
-  'Ruido excesivo',
-  'Acoso',
-  'Incumplimiento de normas',
-  'Otro',
-]
-
 watch(
   () => props.item,
   (val) => {
     if (val) {
-      console.log('Objeto recibido en ModalQueja:', val)
+      console.log('Objeto recibido en ModalActividades:', val)
       form.numero = val.numero || ''
-      form.asunto = val.asunto || ''
-      form.motivo = val.motivo || ''
+      form.asunto = val.tipo || ''
+      form.titulo = val.titulo || ''
       form.fecha = val.fecha || ''
       form.estado = val.estado || ''
       form.descripcion = val.descripcion || ''
@@ -163,7 +153,7 @@ const submitComplaint = () => {
 
   dialog.value = false
 
-  alert('Queja enviada exitosamente')
+  alert('Actividad enviada exitosamente')
 }
 </script>
 

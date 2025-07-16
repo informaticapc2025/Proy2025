@@ -24,7 +24,7 @@
           <td>{{ item.estado }}</td>
           <td>
             <button
-              @click="openModal(item)"
+             @click="openModalNuevo('form')"
               style="background: none; border: none; cursor: pointer"
               title="Ver detalle"
             >
@@ -34,7 +34,7 @@
         </tr>
       </template>
     </v-data-table>
-    <ModalQueja v-model="showModal" :item="selectedItem" :user="user" :mode="isView"  @agregar-queja="agregarQueja" />
+    <ModalQueja :type="modalType" v-model="showModal" :item="selectedItem" :user="user" :mode="isView"  @agregar-queja="agregarQueja" />
   </div>
 </template>
 <script setup>
@@ -49,6 +49,7 @@ const isView = ref("")
 const showModal = ref(false)
 const selectedItem = ref(null)
 const selectedAddress = ref(null)
+const modalType = ref('queja')
 const user = ref(LoginService.getCurrentUser())
 
 const filteredData = computed(() => {
@@ -70,7 +71,7 @@ function agregarQueja(queja) {
   data.value.unshift(queja)
 }
 
-function openModalNuevo() {
+function openModalNuevo(type = 'queja') {
   selectedItem.value = {
     numero: '',
     asunto: '',
@@ -80,6 +81,7 @@ function openModalNuevo() {
     descripcion: '',
   }
   isView.value = false
+  modalType.value = type
   showModal.value = true
 }
 

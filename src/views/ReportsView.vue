@@ -24,7 +24,7 @@
           <td>{{ item.estado }}</td>
           <td>
             <button
-             @click="openModalNuevo('form')"
+             @click="openModal(item)"
               style="background: none; border: none; cursor: pointer"
               title="Ver detalle"
             >
@@ -109,7 +109,8 @@ async function loadQuejas() {
       asunto: a.asunto,
       motivo: a.motivo ?? '',
       fecha: a.fecha,
-      estado: a.estado
+      estado: a.estado,
+      descripcion: a.descripcion
     }))
   } catch (error) {
     console.error(error)

@@ -6,7 +6,7 @@
     </v-tabs>
     <v-tabs-window v-model="tab">
       <v-tabs-window-item :value="1">
-        <div class="text-right">
+        <div v-if="isAdmin" class="text-right">
           <v-btn variant="outlined" class="mb-6" @click="openModalNuevo">Nueva Actividad</v-btn>
         </div>
         <v-container fluid>
@@ -66,7 +66,7 @@
                         v-bind="props"
                         style="background: none; border: none; cursor: pointer"
                         title="Ver detalle"
-                         @click="openModalSolicitudes"
+                         @click="openModalSolicitudes(item)"
                       >
                         <i
                           class="fa-solid fa-eye"
@@ -90,7 +90,7 @@
       </v-tabs-window-item>
     </v-tabs-window>
   </v-card>
-  <ModalActividades :type="modalType" v-model="showModal" :item="selectedItem" :user="user" :mode="isView" />
+  <ModalActividades :type="modalType" v-model="showModal" :item="selectedItem" :user="user" :mode="isView" @agregar-actividad="agregarActividad" />
    <ModalMisSolicitudes v-model="showModalSolicitudes" :item="selectedItem" :user="user" :mode="isView" />
 </template>
 <script setup>
@@ -109,6 +109,7 @@ const modalType = ref('actividad')
 const showModalSolicitudes = ref(false)
 const selectedItem = ref(null)
 const user = ref(LoginService.getCurrentUser())
+const isAdmin = LoginService.isAdmin()
 const snackbar = reactive({
   show: false,
   message: '',
@@ -179,7 +180,13 @@ const deleteItem = (item) => {
   }
 }
 
+function agregarActividad(actividad) {
+  actividades.value.unshift(actividad)
+}
+
+
 function openModalNuevo( type = 'actividad') {
+  const user = LoginService.getCurrentUser()
   selectedItem.value = {
     numero: '',
     asunto: '',
@@ -193,15 +200,8 @@ function openModalNuevo( type = 'actividad') {
   showModal.value = true
 }
 
-function openModalSolicitudes() {
-  selectedItem.value = {
-    numero: '',
-    asunto: '',
-    motivo: '',
-    fecha: '',
-    estado: '',
-    descripcion: '',
-  }
+function openModalSolicitudes(item) {
+  selectedItem.value = item
   showModalSolicitudes.value = true
 }
 

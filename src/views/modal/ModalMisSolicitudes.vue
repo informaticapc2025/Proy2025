@@ -18,7 +18,7 @@
         <div class="mb-4">
           <label class="text-body-2 font-weight-medium mb-2 d-block"> Título </label>
           <v-text-field
-            v-model="form.asunto"
+            v-model="form.titulo"
             variant="outlined"
             density="comfortable"
             hide-details
@@ -29,7 +29,7 @@
         <div class="mb-4">
           <label class="text-body-2 font-weight-medium mb-2 d-block"> Fecha </label>
           <v-text-field
-            v-model="form.asunto"
+            v-model="form.fecha"
             variant="outlined"
             density="comfortable"
             hide-details
@@ -106,12 +106,13 @@ const fileInput = ref(null)
 const selectedFile = ref(null)
 
 const form = reactive({
-  numero: '',
-  asunto: '',
-  motivo: '',
-  fecha: '',
-  estado: '',
+  codigo: '',
   descripcion: '',
+  fecha: '',
+  id: '',
+  resumen: '',
+  tipo: '',
+  titulo: '',
 })
 
 const motivosOptions = [
@@ -127,13 +128,14 @@ watch(
   () => props.item,
   (val) => {
     if (val) {
-      console.log('Objeto recibido en ModalQueja:', val)
-      form.numero = val.numero || ''
-      form.asunto = val.asunto || ''
-      form.motivo = val.motivo || ''
-      form.fecha = val.fecha || ''
-      form.estado = val.estado || ''
+      console.log('Objeto recibido en ModalActividades:', val)
+      form.codigo = val.codigo || ''
       form.descripcion = val.descripcion || ''
+      form.fecha = val.fecha || ''
+      form.id = val.id || ''
+      form.resumen = val.resumen || ''
+      form.tipo = val.tipo || ''
+      form.titulo = val.titulo || ''
     }
   },
   { immediate: true },

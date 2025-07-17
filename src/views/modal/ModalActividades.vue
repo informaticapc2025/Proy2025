@@ -12,7 +12,7 @@
         </button>
       </v-card-title>
 
-      <v-form @submit.prevent="submitComplaint">
+      <v-form @submit.prevent="submitComplaint()">
         <div class="mb-4">
           <label class="text-body-2 font-weight-medium mb-2 d-block"> Tipo </label>
           <v-text-field
@@ -27,6 +27,16 @@
           <label class="text-body-2 font-weight-medium mb-2 d-block"> Título </label>
           <v-text-field
             v-model="form.titulo"
+            variant="outlined"
+            density="comfortable"
+            hide-details
+            class="custom-input"
+          ></v-text-field>
+        </div>
+        <div class="mb-4">
+          <label class="text-body-2 font-weight-medium mb-2 d-block"> Stock </label>
+          <v-text-field
+            v-model="form.stock"
             variant="outlined"
             density="comfortable"
             hide-details
@@ -93,6 +103,7 @@
 <script setup>
 import { currentDate } from '@/util/functions.js'
 import { ref, reactive, watch, computed } from 'vue'
+import LoginService from '@/services/LoginService'
 import ActividadesService from '@/services/ActividadesService'
 
 const props = defineProps({
@@ -100,8 +111,10 @@ const props = defineProps({
   item: Object,
   type: String,
 })
+const user = ref(LoginService.getCurrentUser())
+const isAdmin = LoginService.isAdmin()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'agregarActividad'])
 const dialog = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
@@ -116,6 +129,7 @@ const form = reactive({
   fecha: '',
   estado: '',
   descripcion: '',
+  stock: '',
 })
 
 watch(
@@ -123,12 +137,13 @@ watch(
   (val) => {
     if (val) {
       console.log('Objeto recibido en ModalActividades:', val)
-      form.numero = val.numero || ''
-      form.asunto = val.tipo || ''
-      form.titulo = val.titulo || ''
-      form.fecha = val.fecha || ''
-      form.estado = val.estado || ''
+      form.codigo = val.codigo || ''
       form.descripcion = val.descripcion || ''
+      form.fecha = val.fecha || ''
+      form.id = val.id || ''
+      form.resumen = val.resumen || ''
+      form.tipo = val.tipo || ''
+      form.titulo = val.titulo || ''
     }
   },
   { immediate: true },
@@ -145,14 +160,22 @@ const handleFileSelect = (event) => {
   }
 }
 
-const submitComplaint = () => {
-  console.log('Formulario enviado:', {
-    ...form,
-    archivo: selectedFile.value,
+async function submitComplaint() {
+  const formData = new FormData()
+  formData.append('tipo', form.tipo)
+  formData.append('titulo', form.titulo)
+  formData.append('descripcion', form.descripcion)
+  formData.append('fecha_actividad', new Date().toISOString().slice(0, 10))
+  formData.append('id_usuario', user.value.id)
+  formData.append('stock', Number(form.stock))
+  await ActividadesService.crearActividad(formData)
+  emit('agregarActividad', {
+    tipo: form.tipo,
+    titulo: form.titulo,
+    fecha: currentDate(),
+    descripcion: form.descripcion,
   })
-
-  dialog.value = false
-
+  dialog.value = false;
   alert('Actividad enviada exitosamente')
 }
 </script>

@@ -23,22 +23,35 @@
   </n-card>
 
   <n-card class="card-celebration">
-  <div class="header-cc">
-    <i class="fa-solid fa-award"></i>
-    <p>Reconocimientos</p>
-  </div>
-  <n-list>
-    <n-list-item v-for="(reconocimiento, index) in reconocimientoItems" :key="index">
-      <div style="display: flex; align-items: center; gap: 2px">
-        <img :src="cupe" alt="cumpleaños" style="width: 20px; height: 20px" />
-        <div style="display: grid">
-          <span>{{ reconocimiento.descripcion }}</span>
-          <span style="font-size: 12px">{{ formatDate(reconocimiento.fecha) }}</span>
-        </div>
+    <div class="header-cc">
+      <i class="fa-solid fa-award"></i>
+      <p>Reconocimientos</p>
+      <div v-if="isAdmin" style="margin-bottom: 16px">
+        <n-button type="primary" @click="mostrarModal = true">Crear Reconocimiento</n-button>
       </div>
-    </n-list-item>
-  </n-list>
-</n-card>
+    </div>
+    <n-list>
+      <n-list-item v-for="(reconocimiento, index) in reconocimientoItems" :key="index">
+        <div style="display: flex; align-items: center; gap: 2px">
+          <img :src="cupe" alt="cumpleaños" style="width: 20px; height: 20px" />
+          <div style="display: grid">
+            <span>{{ reconocimiento.descripcion }}</span>
+            <span style="font-size: 12px">{{ formatDate(reconocimiento.fecha) }}</span>
+          </div>
+        </div>
+      </n-list-item>
+    </n-list>
+  </n-card>
+  <n-modal v-model:show="mostrarModal" title="Nuevo Reconocimiento">
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px">
+      <n-input
+        v-model:value="nuevoReconocimiento.descripcion"
+        placeholder="Descripción del reconocimiento"
+        type="textarea"
+      />
+      <n-button type="primary" @click="enviarReconocimiento">Enviar</n-button>
+    </div>
+  </n-modal>
 </template>
 
 <script setup>
@@ -46,12 +59,18 @@ import cake from '@/assets/pngs/cake.jpg'
 import cupe from '@/assets/pngs/trophy.jpg'
 import { useRouter, useRoute } from 'vue-router'
 import ReconocimientosService from '@/services/ReconocimientosService'
+import LoginService from '@/services/LoginService'
 import { onMounted, ref } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
 const reconocimientoItems = ref([])
 const cumpleanosItems = ref([])
+const isAdmin = LoginService.isAdmin()
+const mostrarModal = ref(false)
+const nuevoReconocimiento = ref({
+  descripcion: '',
+})
 
 async function loadReconocimientos() {
   try {
@@ -71,7 +90,7 @@ async function loadCumpleanos() {
     cumpleanosItems.value = cumpleanos.map((a) => ({
       id: a.id,
       nombre: a.nombre,
-      fecha_cumpleanos: a.fecha_cumpleaños
+      fecha_cumpleanos: a.fecha_cumpleaños,
     }))
   } catch (error) {
     console.error(error)
@@ -88,6 +107,24 @@ onMounted(async () => {
   await loadReconocimientos()
   await loadCumpleanos()
 })
+
+async function enviarReconocimiento() {
+  const user = LoginService.getCurrentUser()
+  const body = {
+    descripcion: nuevoReconocimiento.value.descripcion,
+    fecha: new Date().toISOString().split('T')[0],
+    id_usuario: user.id,
+    id_alumno: 5
+  }
+  await ReconocimientosService.crearReconocimiento(body)
+  reconocimientoItems.value.unshift({
+    id_usuario: user.id,
+    descripcion: body.descripcion,
+    fecha: body.fecha,
+  })
+  nuevoReconocimiento.value = { descripcion: '', fecha: new Date().toISOString().split('T')[0] }
+  mostrarModal.value = false
+}
 </script>
 
 <style scoped>

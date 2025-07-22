@@ -5,14 +5,15 @@ export const environment = {
       crear: '/login',
     },
     anuncios: {
-      listar: '/anuncios'
+      listar: '/anuncios',
+      crear: '/anuncios',
     },
     actividades: {
       obtenerPorUsuario: '/actividades/usuario',
       obtenerTodas: '/actividades/admin',
       obtenerPorId: '/actividades',
       obtenerAprobadas: '/actividades/aprobadas',
-      crear: '/actividades',
+      crear: '/actividades/admin',
       actualizar: '/actividades',
       eliminar: '/actividades',
     },
@@ -23,6 +24,7 @@ export const environment = {
     },
     reconocimientos: {
       obtenerReconocimientos: '/reconocimientos',
+      crearReconocimiento: '/reconocimientos',
       obtenerCumpleanos: '/cumpleaños'
     },
     permisos: {
@@ -32,6 +34,17 @@ export const environment = {
       crearAreaComun: '/api/permisos/area-comun',
       obtenerAreaComunPorUsuario: '/api/permisos/area-comun/usuario',
       todasLasAreaComun: '/api/permisos/area-comun/admin',
+    },
+    citas: {
+      obtenerSolicitadasPorUsuario: '/citas/alumno',
+      obtenerPendientes: '/citas/pendientes',
+      obtenerCulminadas: '/citas/culminadas',
+      consultar: '/citas'
+    },
+    asistencia: {
+      obtenerFechasMarcadasPorUsuario: '/asistencia/fechas',
+      obtenerDetallePorFechaYUsuario: '/asistencia/detalle'
     }
+
   },
 }

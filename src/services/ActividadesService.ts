@@ -27,14 +27,12 @@ export class ActividadesService {
       .then((res: { data: Actividad[] }) => res.data)
   }
 
-  async obtenerActividadesPorUsuario(
-    usuarioId: number,
-  ): Promise<Actividad[]> {
+  async obtenerActividadesPorUsuario(usuarioId: number): Promise<Actividad[]> {
     return axios
       .get<Actividad[]>(`${this.urlObtenerPorUsuario}/${usuarioId}`)
       .then((res: { data: Actividad[] }) => res.data)
   }
-  
+
   async obtenerActividadesAprobadas(): Promise<Actividad[]> {
     return axios
       .get<Actividad[]>(this.urlObtenerAprobadas)
@@ -47,11 +45,15 @@ export class ActividadesService {
   //       .then(res => res.data);
   //   }
 
-  //   crearActividad(body: Partial<Queja>): Promise<Queja> {
-  //     return axios
-  //       .post<Queja>(`${this.urlCrear}`, body)
-  //       .then(res => res.data);
-  //   }
+  async crearActividad(body: Partial<Actividad>): Promise<Actividad> {
+    return axios
+      .post<Actividad>(this.urlCrear, body, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then((res) => res.data)
+  }
 
   //   actualizarActividad(id: number, body: Partial<Queja>): Promise<Queja> {
   //     return axios

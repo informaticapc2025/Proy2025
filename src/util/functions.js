@@ -27,3 +27,11 @@ export function dateFormatV2(fecha) {
   const partes = fecha.split('-')
   return `${partes[2]}/${partes[1]}/${partes[0]}`
 }
+
+export function dateFormatV3(value) {
+  const fecha = new Date(value);
+  const horas = fecha.getHours();
+  const minutos = fecha.getMinutes();
+  const segundos = fecha.getSeconds();
+  return `${horas}:${minutos}.${segundos}`;
+}

@@ -12,8 +12,7 @@
         <v-row justify="center" align="center" class="fill-height">
           <v-col cols="12" sm="8" md="6" lg="4" xl="3">
             <div class="text-center mb-8">
-              <h1 class="login-title mb-4">Login #10</h1>
-              <p class="login-subtitle">Have an account?</p>
+              <h1 class="login-title mb-4">Bienvenido</h1>
             </div>
 
             <v-form @submit.prevent="handleLogin" class="glass-form">
@@ -203,7 +202,7 @@ const handleLogin = async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-9HZndJ4KiqpM8eNqgirB6vqtEUu9Il.png');
+  background-image: url('src/assets/background-1.png'); 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

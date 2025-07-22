@@ -202,12 +202,6 @@ const activeTab = ref('solicitud')
 const user = ref(LoginService.getCurrentUser())
 const form = reactive({ desde: '', hasta: '', motivo: '' })
 const snackbar = reactive({ show: false, message: '', color: 'success' })
-const newReserva = {
-  id_usuario: user.value.id,
-  fecha_salida: dateFormatDB(form.desde),
-  fecha_regreso: dateFormatDB(form.hasta),
-  motivo: form.motivo,
-}
 const dateOptions = [
   '01/01/2025',
   '02/01/2025',
@@ -261,9 +255,15 @@ async function submitRequest() {
     snackbar.show = true
     return
   }
-  console.log(newReserva)
-  await PermisosService.crearPermisoSalida(newReserva)
-  solicitudes.value.unshift(newReserva)
+  const params = {
+    id_usuario: user.value.id,
+    fecha_salida: dateFormatDB(form.desde),
+    fecha_regreso: dateFormatDB(form.hasta),
+    motivo: form.motivo,
+  }
+  await PermisosService.crearPermisoSalida(params)
+  params.estado = 'En revisión'
+  solicitudes.value.push(params)
   form.desde = ''
   form.hasta = ''
   form.motivo = ''

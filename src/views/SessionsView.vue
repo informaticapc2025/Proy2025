@@ -1,12 +1,26 @@
 <template>
   <div class="citas-container">
     <div class="citas-header">
-      <div class="mes">Mayo</div>
-      <div class="horario">
-        <strong>Hora de atención</strong>
+    <table cellspacing="0" cellpadding="8"style="border-collapse: collapse; width: auto; text-align: left; margin: 0; font-family: sans-serif;">
+     <thead>
+    <tr style="background-color: #f9f9f9;">
+      <th style="border: 1px solid #ccc; padding: 12px;">Mes</th>
+      <th style="border: 1px solid #ccc; padding: 12px;">Hora de atención</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color: #e0e0e0;">
+      <td style="border: 1px solid #ccc; padding: 12px;">Mayo</td>
+      <td style="border: 1px solid #ccc; padding: 12px;">
         <div>09:00am - 12:00pm</div>
         <div>02:00pm - 05:00pm</div>
-      </div>
+      </td>
+    </tr>
+  </tbody>
+    </table>
+    <div class="text-right">
+      <v-btn variant="outlined" class="mb-6" @click="openModalNewSession()">Agendar Cita</v-btn>
+    </div>
     </div>
     <template v-if="!isAdmin">
       <n-data-table
@@ -15,7 +29,7 @@
         :data="dataAlumno"
         :pagination="pagination"
       />
-      <n-modal v-model:show="showModal" preset="dialog" class="modal-cita">
+      <!-- <n-modal v-model:show="showModal" preset="dialog" class="modal-cita">
         <template #header>
           <h2 style="color: #a1003c; text-align: center">Agendar Cita</h2>
         </template>
@@ -55,7 +69,7 @@
             >
           </div>
         </div>
-      </n-modal>
+      </n-modal> -->
     </template>
     <template v-else>
       <div>
@@ -103,8 +117,9 @@
           </div>
         </template>
       </n-modal>
-    </template>
+       </template>
   </div>
+  <ModalCitas v-model="showModalNewSession" :item="selectedItem"/>
 </template>
 <script lang="ts">
 // @ts-ignore
@@ -113,6 +128,7 @@ import { defineComponent, ref, h, onMounted, reactive, resolveComponent } from '
 import { NButton, NModal, NInput, NSelect, NDataTable } from 'naive-ui'
 import CitasService from '@/services/CitasService'
 import LoginService from '@/services/LoginService'
+import ModalCitas from './modal/ModalCitas.vue'
 import type { CitaAdmin, CitaAlumno } from '@/models/Cita'
 
 export default defineComponent({
@@ -122,8 +138,10 @@ export default defineComponent({
     NInput,
     NSelect,
     NDataTable,
+    ModalCitas
   },
   setup() {
+    const showModalNewSession = ref(false)
     const tabActivo = ref('pendientes')
     const dataAlumno = ref<CitaAlumno[]>([])
     const dataPendiente = ref<CitaAdmin[]>([])
@@ -135,6 +153,15 @@ export default defineComponent({
     const modalVisible = ref(false)
     const citaSeleccionada = ref<any>(null)
     const form = ref({ motivo: '', descripcion: '', area: '' })
+    const selectedItem = ref({
+      numero: '',
+      asunto: '',
+      motivo: '',
+      fecha: '',
+      estado: '',
+      descripcion: '',
+      attend: false
+    })
     const filtros = reactive({
       area: '',
       nombre: '',
@@ -314,6 +341,19 @@ export default defineComponent({
       }
     }
 
+    function openModalNewSession() {
+      selectedItem.value = {
+        numero: '',
+        asunto: '',
+        motivo: '',
+        fecha: '',
+        estado: '',
+        descripcion: '',
+        attend : false
+      }
+      showModalNewSession.value = true
+    }
+
     return {
       filtros,
       dataAlumno,
@@ -336,6 +376,10 @@ export default defineComponent({
       tabActivo,
       modalVisible,
       citaSeleccionada,
+      selectedItem,
+      showModalNewSession,
+      user,
+      openModalNewSession,
     }
   },
 })
@@ -343,7 +387,7 @@ export default defineComponent({
 
 <style scoped>
 .citas-container {
-  background-color: rgba(184, 186, 163, 0.85);
+  background-color: rgba(200, 210, 150, 0.5);
   width: 95%;
   padding: 20px;
   border-radius: 15px;

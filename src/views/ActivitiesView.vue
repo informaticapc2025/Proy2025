@@ -302,7 +302,7 @@ async function loadActividadesAprobadas() {
 
 .contenido {
   flex: 1;
-  background: rgba(200, 210, 150, 0.3);
+  background: rgba(200, 210, 150, 0.5);
   padding: 20px;
   border-radius: 20px;
   margin-left: auto;

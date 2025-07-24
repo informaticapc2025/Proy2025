@@ -1,6 +1,6 @@
 <template>
   <div class="about"><h1>Mis reportes</h1></div>
-  <div style="background-color: rgba(200, 210, 150, 0.5); width: 95%; padding: 20px">
+  <div style="background-color: rgba(197, 199, 176, 0.95); width: 95%; padding: 20px; border-radius: 20px;">
     <div class="text-right">
       <v-btn variant="outlined" class="mb-6" @click="openModalNuevo">Nueva Queja</v-btn>
     </div>

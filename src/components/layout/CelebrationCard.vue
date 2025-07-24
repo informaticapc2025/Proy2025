@@ -1,5 +1,5 @@
 <template>
-  <n-card class="card-celebration">
+  <n-card class="card-celebration pa-4">
     <div class="header-cc">
       <i class="fa-solid fa-cake-candles"></i>
       <p>Cumpleaños de hoy</p>
@@ -22,7 +22,7 @@
     </n-list>
   </n-card>
 
-  <n-card class="card-celebration">
+  <n-card class="card-celebration pa-4">
     <div class="header-cc">
       <i class="fa-solid fa-award"></i>
       <p>Reconocimientos</p>

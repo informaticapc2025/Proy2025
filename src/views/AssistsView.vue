@@ -4,7 +4,7 @@
       class="pa-6"
       style="
         border-radius: 16px;
-        background-color: rgba(184, 186, 163, 0.85);
+        background-color: rgba(197, 199, 176, 0.95);
         border: 3px solid #4a90e2;
       "
       elevation="4"

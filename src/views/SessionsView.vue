@@ -2,21 +2,21 @@
   <div class="citas-container">
     <div class="citas-header">
     <table cellspacing="0" cellpadding="8"style="border-collapse: collapse; width: auto; text-align: left; margin: 0; font-family: sans-serif;">
-     <thead>
-    <tr style="background-color: #f9f9f9;">
-      <th style="border: 1px solid #ccc; padding: 12px;">Mes</th>
-      <th style="border: 1px solid #ccc; padding: 12px;">Hora de atención</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr style="background-color: #e0e0e0;">
-      <td style="border: 1px solid #ccc; padding: 12px;">Mayo</td>
-      <td style="border: 1px solid #ccc; padding: 12px;">
-        <div>09:00am - 12:00pm</div>
-        <div>02:00pm - 05:00pm</div>
-      </td>
-    </tr>
-  </tbody>
+      <thead>
+        <tr style="background-color: #f9f9f9;">
+          <th style="border: 1px solid #ccc; padding: 12px;">Mes</th>
+          <th style="border: 1px solid #ccc; padding: 12px;">Hora de atención</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background-color: #e0e0e0;">
+          <td style="border: 1px solid #ccc; padding: 12px;">Mayo</td>
+          <td style="border: 1px solid #ccc; padding: 12px;">
+            <div>09:00am - 12:00pm</div>
+            <div>02:00pm - 05:00pm</div>
+          </td>
+        </tr>
+      </tbody>
     </table>
     <div class="text-right">
       <v-btn variant="outlined" class="mb-6" @click="openModalNewSession()">Agendar Cita</v-btn>
@@ -24,6 +24,7 @@
     </div>
     <template v-if="!isAdmin">
       <n-data-table
+        class="data-table"
         ref="dataTableInst"
         :columns="columnsAlumno"
         :data="dataAlumno"
@@ -387,7 +388,7 @@ export default defineComponent({
 
 <style scoped>
 .citas-container {
-  background-color: rgba(200, 210, 150, 0.5);
+  background-color: rgba(197, 199, 176, 0.95);
   width: 95%;
   padding: 20px;
   border-radius: 15px;
@@ -440,5 +441,34 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   font-weight: bold;
+}
+::v-deep(.n-data-table-table) {
+  border-radius: 20px !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: white;
+}
+::v-deep(.n-data-table) {
+  border-radius: 20px !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: white;
+}
+
+::v-deep(.n-data-table-th) {
+  background-color: #D9D9D9;
+  color: black;
+  font-weight: bold !important;
+}
+
+::v-deep(.n-data-table-td) {
+  background-color: transparent !important;
+  padding: 8px;
+}
+
+::v-deep(.n-data-table-th__title){
+  color: #163053 !important;
 }
 </style>

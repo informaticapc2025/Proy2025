@@ -1,8 +1,8 @@
 <template>
   <v-card class="contenido">
-    <v-tabs v-model="tab" align-tabs="start" color="primary">
-      <v-tab :value="1">Actividades</v-tab>
-      <v-tab :value="2">Mis Solicitudes</v-tab>
+    <v-tabs v-model="tab" align-tabs="start" color="#A37801">
+      <v-tab :value="1" class="custom-tab">Actividades</v-tab>
+      <v-tab :value="2" class="custom-tab">Mis Solicitudes</v-tab>
     </v-tabs>
     <v-tabs-window v-model="tab">
       <v-tabs-window-item :value="1">
@@ -23,7 +23,7 @@
             </div>
             <div class="tipo">{{ actividad.tipo.toUpperCase() }}</div>
             <div class="accion">
-              <n-button type="warning" ghost  @click="openModalNuevo('form')">Acceder al formulario</n-button>
+              <n-button  style="background-color:#ffc107;" type="warning"  @click="openModalNuevo('form')">Acceder al formulario</n-button>
             </div>
           </div>
         </v-container>
@@ -264,6 +264,14 @@ async function loadActividadesAprobadas() {
 </script>
 
 <style scoped>
+.custom-tab {
+  font-size: larger;
+  color: #f5f5f5;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Righteous', cursive;
+}
+
 .actividades-wrapper {
   display: flex;
   gap: 20px;
@@ -302,7 +310,7 @@ async function loadActividadesAprobadas() {
 
 .contenido {
   flex: 1;
-  background: rgba(200, 210, 150, 0.5);
+  background: rgba(197, 199, 176, 0.95);
   padding: 20px;
   border-radius: 20px;
   margin-left: auto;
@@ -335,6 +343,7 @@ async function loadActividadesAprobadas() {
 }
 
 .titulo-actividad {
+  color: #163053;
   font-size: 16px;
   font-weight: bold;
 }

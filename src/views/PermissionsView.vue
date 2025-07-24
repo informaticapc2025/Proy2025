@@ -4,7 +4,7 @@
       <v-col cols="12" md="6">
         <v-card
           class="pa-4"
-          style="border-radius: 16px; background-color: rgba(200, 210, 150, 0.5)"
+          style="border-radius: 16px; background-color: rgba(197, 199, 176, 0.95)"
         >
           <v-tabs v-model="activeTab" class="mb-4">
             <v-tab value="solicitud" class="custom-tab">
@@ -96,96 +96,14 @@
               </div>
             </v-tabs-window-item>
           </v-tabs-window>
-
-
-
-          <!-- <v-window v-model="activeTab">
-            <v-window-item value="solicitud">
-              <div class="mb-4">
-                <p class="text-body-2 mb-4 text-grey-darken-2">
-                  Registre el rango de días que estarás fuera de la vivienda universitaria:
-                </p>
-                <v-form @submit.prevent="submitRequest">
-                  <div class="mb-3">
-                    <label class="text-body-2 font-weight-medium mb-2 d-block"> Desde </label>
-                    <v-select
-                      v-model="form.desde"
-                      :items="dateOptions"
-                      variant="outlined"
-                      density="comfortable"
-                      hide-details
-                      class="custom-select"
-                    ></v-select>
-                  </div>
-                  <div class="mb-3">
-                    <label class="text-body-2 font-weight-medium mb-2 d-block"> Hasta </label>
-                    <v-select
-                      v-model="form.hasta"
-                      :items="dateOptions"
-                      variant="outlined"
-                      density="comfortable"
-                      hide-details
-                      class="custom-select"
-                    ></v-select>
-                  </div>
-                  <div class="mb-4">
-                    <label class="text-body-2 font-weight-medium mb-2 d-block"> Motivo </label>
-                    <v-textarea
-                      v-model="form.motivo"
-                      variant="outlined"
-                      rows="4"
-                      hide-details
-                      class="custom-textarea"
-                    ></v-textarea>
-                  </div>
-                  <v-alert
-                    type="warning"
-                    variant="text"
-                    class="mb-4 custom-alert"
-                    density="compact"
-                  >
-                    <span class="text-caption text-black">
-                      *Según el reglamento tu rango de salida de la ciudad universitaria tendrá a
-                      ser revisada para su aprobación.
-                    </span>
-                  </v-alert>
-                  <div class="d-flex justify-start">
-                    <v-btn
-                      type="submit"
-                      color="#FFC107"
-                      size="large"
-                      style="
-                        border-radius: 20px;
-                        text-transform: none;
-                        font-weight: 600;
-                        color: #000;
-                      "
-                      min-width="100px"
-                    >
-                      Enviar
-                    </v-btn>
-                  </div>
-                </v-form>
-              </div>
-            </v-window-item>
-            <v-window-item value="area-comun">
-              <div class="text-center pa-8">
-                <v-icon size="64" color="grey-lighten-1" class="mb-4"> mdi-home-group </v-icon>
-                <p class="text-h6 text-grey-darken-1">Área Común</p>
-                <p class="text-body-2 text-grey">
-                  Funcionalidad para áreas comunes próximamente disponible.
-                </p>
-              </div>
-            </v-window-item>
-          </v-window> -->
         </v-card>
       </v-col>
       <v-col cols="12" md="6">
         <v-card
           class="pa-4"
-          style="border-radius: 16px; background-color: rgba(200, 210, 150, 0.5)"
+          style="border-radius: 16px; background-color: rgba(197, 199, 176, 0.95)"
         >
-          <h3 class="text-h6 font-weight-bold mb-4 text-grey-darken-2">Reservas</h3>
+          <h3 class="mb-4 text-white text-title">Reservas</h3>
           <div v-if="solicitudes.length === 0" class="text-center pa-8">
             <v-icon size="48" color="grey-lighten-1" class="mb-3"> mdi-calendar-blank </v-icon>
             <p class="text-body-2 text-grey">No tienes reservas registradas</p>
@@ -197,11 +115,11 @@
               :key="permiso.id"
               class="mb-3 pa-3"
               variant="outlined"
-              style="border-radius: 12px"
+              style="border: 1px solid #B8BAA3; border-radius: 12px"
             >
               <div class="d-flex justify-space-between align-center">
                 <div>
-                  <p class="text-body-1 font-weight-medium mb-1">
+                  <p class="text-body-1 font-weight-medium mb-1" style="color: white;">
                     {{ dateFormatV2(permiso.fecha_salida) }} al
                     {{ dateFormatV2(permiso.fecha_regreso) }}
                   </p>
@@ -421,13 +339,18 @@ function chooosePermisosDeAreaComun() {
 }
 </script>
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
 .custom-tab {
+  font-size: larger;
+  color: #f5f5f5;
   text-transform: none;
-  font-weight: 500;
+  font-weight: 700;
+  font-family: 'Righteous', cursive;
 }
 
 .active-tab-text {
-  color: rgba(24, 103, 192, 1);
+  color: #A37801;
   font-weight: 600;
   padding-bottom: 4px;
 }
@@ -446,12 +369,19 @@ function chooosePermisosDeAreaComun() {
 .custom-alert :deep(.v-alert__content) {
   padding: 8px 0;
 }
+.text-title{
+  font-size: 28px !important;
+  font-size: larger;
+  color: #f5f5f5;
+  text-transform: none;
+  font-family: 'Righteous', cursive;
+}
 
 :deep(.v-tabs-slider) {
   background-color: #ffc107;
 }
 
 :deep(.v-tab--selected) {
-  color:  rgba(24, 103, 192, 1);
+  color:  #A37801;
 }
 </style>

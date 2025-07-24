@@ -16,10 +16,10 @@
         </n-layout-content>
 
         <!-- Sidebar derecho -->
-        <n-layout-sider width="30%" content-style="padding: 20px;">
+        <n-layout-sider width="25%" content-style="padding: 20px;">
           <n-image width="100%" :src="logo" />
           <CelebrationCard />
-          <n-layout-header bordered style="padding: 10px; margin-top: 20px">
+          <n-layout-header style="padding: 10px; margin-top: 20px">
             <n-button @click="showModal = true">Abrir Modal</n-button>
             <n-modal v-model:show="showModal">
               <div style="padding: 1em">¡Hola desde Naive UI!</div>

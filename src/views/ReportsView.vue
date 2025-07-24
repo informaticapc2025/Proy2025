@@ -4,7 +4,7 @@
     <div class="text-right">
       <v-btn variant="outlined" class="mb-6" @click="openModalNuevo">Nueva Queja</v-btn>
     </div>
-    <v-data-table :items="filteredData" class="elevation-1" :items-per-page="5">
+    <v-data-table :items="filteredData"  :items-per-page="5">
       <template #headers>
         <tr>
           <th>N° Reporte</th>
